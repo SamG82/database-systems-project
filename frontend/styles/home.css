@@ -1,0 +1,59 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60%;
+    
+    font-size: 1.5rem;
+    color: #FFFFFF;
+}
+
+.main h1 {
+    margin: 1em 0;
+}
+
+.patient-options {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+}
+
+.account-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.patient-options button {
+    margin: 0 1rem;
+    border: none;
+    font-size: 1.3rem;
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    flex: 1;
+}
+
+.patient-options button:hover {
+    cursor: pointer;
+    background-color: #cecece;
+}
+
+.administrator-button {
+    background: none;
+    width: 30%;
+    color: inherit;
+    font-size: 1rem;
+    border: none;
+    font-size: 1.4rem;
+}
+
+.administrator-button:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.divider {
+    width: 40%;
+}
