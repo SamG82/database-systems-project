@@ -1,4 +1,5 @@
 import "../styles/home.css"
+import { Link } from "react-router-dom"
 
 function Home() {
   return (
@@ -7,8 +8,8 @@ function Home() {
         <h1 className="title">Appointment Manager</h1>
         <div className="account-options">
           <div className="patient-options">
-            <button>Log in</button>
-            <button>Sign up</button>
+            <Link to={'/login'}>Log in</Link>
+            <Link to={'/signup'}>Sign up</Link>
           </div>
           <hr className="divider"></hr>
           <button className="administrator-button">Administrator?</button>

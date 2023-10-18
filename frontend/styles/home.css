@@ -26,16 +26,21 @@
     gap: 1em;
 }
 
-.patient-options button {
+.patient-options a {
+    text-decoration: none;
     margin: 0 1rem;
     border: none;
     font-size: 1.3rem;
     border-radius: 10px;
     padding: 1rem 2rem;
     flex: 1;
+    text-align: center;
+    background-color: #FFFFFF;
+    color: #272727;
+    font-weight: bold;
 }
 
-.patient-options button:hover {
+.patient-options a:hover {
     cursor: pointer;
     background-color: #cecece;
 }
