@@ -9,7 +9,7 @@ function Home() {
         <div className="account-options">
           <div className="patient-options">
             <Link to={'/login'}>Log in</Link>
-            <Link to={'/signup'}>Sign up</Link>
+            <Link to={'/register'}>Register</Link>
           </div>
           <hr className="divider"></hr>
           <button className="administrator-button">Administrator?</button>
