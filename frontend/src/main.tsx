@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import Home from './home'
 import Form from './components/form.tsx'
+import Appointments from './appointments.tsx'
 
 import "../styles/index.css"
 
@@ -24,10 +25,16 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Form title="Register" fields={registerFields}/>
+  },
+  {
+    path: "/appointments",
+    element: <Appointments/>
   }
 ])
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <main>
+      <RouterProvider router={router}/>
+    </main>
   </React.StrictMode>,
 )

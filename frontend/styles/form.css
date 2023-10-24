@@ -30,9 +30,15 @@
 .form-field input {
     padding: 1rem 0.8rem;
     margin-top: 0.3rem;
-    border-radius: 15px;
+    border: none;
+    border-bottom: 1px solid black;
     font-size: 2rem;
-    border: 2px solid black;
+}
+
+.form-field input:focus {
+    outline: none !important;
+    box-shadow: 0 0 2px black;
+    border-bottom: none;
 }
 
 .submit-button {
@@ -50,4 +56,16 @@
 .submit-button:hover {
     cursor: pointer;
     background-color: #5e697e;
+}
+
+@media screen and (max-width: 1605px) {
+    .form-container {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 860px) {
+    .form-container {
+        width: 90%;
+    }
 }
