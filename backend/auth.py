@@ -27,9 +27,9 @@ def validate_pw(plain_text: str, pw_hash):
 
 def make_jwt(name, role, id):
     encoded_jwt = jwt.encode({
-        "name": name,
-        "role": role,
-        "id": id
+        'name': name,
+        'role': role,
+        'id': id
     }, SECRET)
 
     return encoded_jwt
@@ -38,7 +38,7 @@ def decode_jwt(token):
     result = False
     
     try:
-        result = jwt.decode(token, SECRET, algorithms=["HS256"])
+        result = jwt.decode(token, SECRET, algorithms=['HS256'])
     except:
         pass
 
@@ -54,22 +54,31 @@ def protected(f):
         if payload:
             return f(payload, *args, **kwargs)
         
-        return {"message": "Invalid Authentication"}, 401
+        return {'message": "Invalid Authentication'}, 401
     
     return decorated
 
 # patient account creation
-@auth_bp.route("/patient/register", methods=["POST"])
-def patient_register():
-    name = request.json['name']
-    phone = request.json['phone']
-    address = request.json['address']
-    email = request.json['email']
-    password_plaintext = request.json['password']
+@auth_bp.route('/users/register', methods=['POST'])
+def user_register():
+    name = request.json.get('name', '')
+    phone = request.json.get('phone', '')
+    address = request.json.get('address', '')
+    email = request.json.get('email', '')
+    password_plaintext = request.json.get('password', '')
 
+    user_role = request.json.get('role', '')
     pw_hash = hash_pw(password_plaintext)
-    new_patient = models.Patient(name, phone, address, email, pw_hash)
-    models.db.session.add(new_patient)
+
+    new_user = None
+    if user_role == 'patient':
+        new_user = models.Patient(name, phone, address, email, pw_hash)
+    elif user_role == 'admin':
+        new_user = models.Admin(name, address, email, pw_hash)
+    else:
+        return {}, 401
+    
+    models.db.session.add(new_user)
     
     try:
         models.db.session.commit()
@@ -79,34 +88,38 @@ def patient_register():
         return {}, 401
     
 # patient login
-@auth_bp.route("/patient/login", methods=["POST"])
-def patient_login():
-    email = request.json['email']
-    password_plaintext = request.json['password']
+@auth_bp.route('/users/login', methods=['POST'])
+def user_login():
+    email = request.json.get('email', '')
+    password_plaintext = request.json.get('password', '')
+    user_role = request.json.get('role', '')
+
+    user = None
+    potential_user = None
+    if user_role == 'patient':
+        user = models.Patient.query.filter_by(email=email).one()
+        potential_user = models.patient_schema.dump(user)
+    elif user_role == 'admin':
+        user = models.Admin.query.filter_by(email=email).one()
+        potential_user = models.admin_schema.dump(user)
+    else:
+        return {}, 401
     
-    user = models.Patient.query.filter_by(email=email).one()
-    potential_user = models.patient_schema.dump(user)
     valid = validate_pw(password_plaintext, potential_user['password_hash'])
     resp = make_response({})
     
     if valid:
         resp.status_code = 200
-        token = make_jwt(potential_user['name'], "patient", potential_user['id'])
+        token = make_jwt(potential_user['name'], user_role, potential_user['id'])
         resp.set_cookie('token', token)
     else:
         resp.status_code = 401
 
     return resp
 
-@auth_bp.route("/patient/logout", methods=["POST"])
-def patient_logout():
+@auth_bp.route('/users/logout', methods=['POST'])
+def logout():
     resp = make_response({})
     resp.set_cookie('token', '')
 
     return resp
-
-@auth_bp.route("/patient/protected", methods=["GET"])
-@protected
-def protected_test(user_info):
-    return {'test': user_info}
-
