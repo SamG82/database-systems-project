@@ -64,7 +64,6 @@ def patient_login():
     
     user = models.Patient.query.filter_by(email=email).one()
     potential_user = models.patient_schema.dump(user)
-    print(potential_user)
     valid = validate_pw(password_plaintext, potential_user['password_hash'])
     resp = make_response({})
     
@@ -74,6 +73,13 @@ def patient_login():
         resp.set_cookie('token', token)
     else:
         resp.status_code = 401
+
+    return resp
+
+@auth_bp.route("/patient/logout", methods=["POST"])
+def patient_logout():
+    resp = make_response({})
+    resp.set_cookie('token', '')
 
     return resp
 
