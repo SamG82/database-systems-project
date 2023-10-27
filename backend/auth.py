@@ -5,6 +5,7 @@ import models
 from dotenv import load_dotenv
 import os
 import jwt
+from functools import wraps
 
 load_dotenv()
 SECRET = os.getenv('SECRET')
@@ -34,7 +35,28 @@ def make_jwt(name, role, id):
     return encoded_jwt
 
 def decode_jwt(token):
-    return jwt.decode(token, SECRET, algorithms=["HS256"])
+    result = False
+    
+    try:
+        result = jwt.decode(token, SECRET, algorithms=["HS256"])
+    except:
+        pass
+
+    return result
+
+# protected decorator for routes
+def protected(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.cookies.get('token')
+        payload = decode_jwt(token)
+
+        if payload:
+            return f(payload, *args, **kwargs)
+        
+        return {"message": "Invalid Authentication"}, 401
+    
+    return decorated
 
 # patient account creation
 @auth_bp.route("/patient/register", methods=["POST"])
@@ -82,4 +104,9 @@ def patient_logout():
     resp.set_cookie('token', '')
 
     return resp
+
+@auth_bp.route("/patient/protected", methods=["GET"])
+@protected
+def protected_test(user_info):
+    return {'test': user_info}
 
