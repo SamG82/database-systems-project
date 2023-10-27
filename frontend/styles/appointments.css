@@ -1,7 +1,74 @@
-.appointments-title {
-    padding: 1.3rem 4rem;
-    font-size: 2.5rem;
-    text-align: center;
-    color: white;
+.appointments-main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
+.appointments-title {
+    padding: 1rem 0;
+    font-size: 2rem;
+    text-align: center;
+    color: black;
+    background-color: white;
+    text-align: left;
+    padding-left: 4rem;
+}
+
+.appointments-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    border: 1px solid black;
+    background: white;
+    width: 80%;
+
+    border-radius: 15px;
+    padding: 20px 10px;
+    text-align: center;
+    place-items: center;
+    margin: 0 auto;
+    flex: 1;
+    margin-bottom: 2rem;
+}
+
+.column-title {
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.notes-button {
+    width: 80%;
+    border: none;
+    background-color: rgb(23, 116, 255);
+    font-size: 1.6rem;
+    border-radius: 15px;
+    color: white;
+    padding: 1rem;
+}
+
+.notes-button:hover {
+    cursor: pointer;
+    background-color: rgb(70, 144, 255);
+}
+
+.appointments-list span {
+    padding: 0.4rem 0;
+    font-size: 2rem;
+}
+
+.appointments-main a {
+    margin: auto;
+    text-decoration: none;
+    color: white;
+    font-size: 2rem;
+    background-color: white;
+    padding: 1rem 2rem;
+    color: black;
+    border-radius: 40px;
+}
+
+.appointments-main a:hover {
+    text-decoration: underline;
+    
+}

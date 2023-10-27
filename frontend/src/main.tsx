@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import Home from './home'
+import Home from './pages/home.tsx'
 import Form from './components/form.tsx'
-import Appointments from './appointments.tsx'
+import Appointments from './pages/appointments.tsx'
 
 import "../styles/index.css"
 
