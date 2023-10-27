@@ -9,23 +9,18 @@
     padding: 1rem 0;
     font-size: 2rem;
     text-align: center;
-    color: black;
-    background-color: white;
+    color: white;
     text-align: left;
     padding-left: 4rem;
+    border-bottom: 1px solid white;
 }
 
 .appointments-list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-    border: 1px solid black;
     background: white;
-    width: 80%;
-
     border-radius: 15px;
-    padding: 20px 10px;
-    text-align: center;
+    padding: 1rem 4rem;
     place-items: center;
     margin: 0 auto;
     flex: 1;
@@ -34,34 +29,32 @@
 
 .column-title {
     font-weight: bold;
-    margin-bottom: 1rem;
 }
 
-.notes-button {
-    width: 80%;
+.review-button {
     border: none;
     background-color: rgb(23, 116, 255);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     border-radius: 15px;
     color: white;
-    padding: 1rem;
+    padding: 1.3rem 1rem;
+    min-width: 150px;
 }
 
-.notes-button:hover {
+.review-button:hover {
     cursor: pointer;
-    background-color: rgb(70, 144, 255);
+    background-color: rgb(88, 155, 255);
 }
 
 .appointments-list span {
-    padding: 0.4rem 0;
-    font-size: 2rem;
+    font-size: 1.7rem;
 }
 
 .appointments-main a {
     margin: auto;
     text-decoration: none;
     color: white;
-    font-size: 2rem;
+    font-size: 1.6rem;
     background-color: white;
     padding: 1rem 2rem;
     color: black;

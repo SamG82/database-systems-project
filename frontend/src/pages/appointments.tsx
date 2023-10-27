@@ -1,5 +1,5 @@
 import "../../styles/appointments.css"
-import AppointmentListing from "../components/appointment"
+import AppointmentRow from "../components/appointment-row"
 import { Link } from "react-router-dom"
 
 const testData = [
@@ -41,7 +41,7 @@ function Appointments() {
                 <span className="column-title">Date</span>
                 {/* placeholder */}
                 <span></span>
-                {testData.map((appt, idx) => <AppointmentListing key={idx} appt={appt}/>)}
+                {testData.map((appt, idx) => <AppointmentRow key={idx} appt={appt}/>)}
             </div>
         </div>
     )

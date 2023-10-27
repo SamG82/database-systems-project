@@ -12,17 +12,17 @@ type Props = {
     appt: Appointment
 }
 
-function AppointmentListing(props: Props) {
+function AppointmentRow(props: Props) {
     return (
         <>
             <span>{props.appt.hospitalName}</span>
             <span>{props.appt.doctorName}</span>
             <span>{`${props.appt.startTime} - ${props.appt.endTime}`}</span>
             <span>{props.appt.date}</span>
-            <button className="notes-button">Add Review</button>
+            <button className="review-button">Add Review</button>
         </>
             
     )
 }
 
-export default AppointmentListing
+export default AppointmentRow
