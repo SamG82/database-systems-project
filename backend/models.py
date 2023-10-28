@@ -34,11 +34,19 @@ class HospitalSchema(ma.Schema):
 class Hospital(db.Model):
     __tablename__ = 'hospital'
     id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
     name = db.Column(db.String(50), unique=True, nullable=False)
     address = db.Column(db.String(50), unique=True, nullable=False)
     close_time = db.Column(db.String(20), nullable=False)
     open_time = db.Column(db.String(20), nullable=False)
     phone = db.Column(db.Integer, unique=True, nullable=False)
+
+    def __init__(self, name, address, close_time, open_time, phone):
+        self.name = name
+        self.address = address
+        self.close_time = close_time
+        self.open_time = open_time
+        self.phone = phone
 
 hospital_schema = HospitalSchema()
 hospitals_schema = HospitalSchema(many=True)
@@ -50,7 +58,6 @@ class AdminSchema(ma.Schema):
 class Admin(db.Model):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
-    hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
     hospital = db.relationship('Hospital', uselist=False, backref='admin')
     name = db.Column(db.String(30), nullable=False)
     address = db.Column(db.String(50), nullable=False)

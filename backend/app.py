@@ -10,6 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 models.db.init_app(app)
 
+# reset databse on startup - debug
 with app.app_context():
     models.db.drop_all()
     models.db.create_all()
@@ -19,6 +20,7 @@ models.ma.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
 
+# routes for testing
 @app.route('/patients', methods=['GET'])
 def patients():
     all_patients = models.Patient.query.all()

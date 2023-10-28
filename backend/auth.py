@@ -66,13 +66,13 @@ def protected_route(roles):
 # user account creation
 @auth_bp.route('/users/register', methods=['POST'])
 def user_register():
-    name = request.json.get('name', '')
-    phone = request.json.get('phone', '')
-    address = request.json.get('address', '')
-    email = request.json.get('email', '')
-    password_plaintext = request.json.get('password', '')
+    name = request.json.get('name', None)
+    phone = request.json.get('phone', None)
+    address = request.json.get('address', None)
+    email = request.json.get('email', None)
+    password_plaintext = request.json.get('password', None)
 
-    user_role = request.json.get('role', '')
+    user_role = request.json.get('role', None)
     pw_hash = hash_pw(password_plaintext)
 
     new_user = None
@@ -95,9 +95,9 @@ def user_register():
 # patient login
 @auth_bp.route('/users/login', methods=['POST'])
 def user_login():
-    email = request.json.get('email', '')
-    password_plaintext = request.json.get('password', '')
-    user_role = request.json.get('role', '')
+    email = request.json.get('email', None)
+    password_plaintext = request.json.get('password', None)
+    user_role = request.json.get('role', None)
 
     user = None
     potential_user = None
