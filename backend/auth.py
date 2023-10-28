@@ -25,6 +25,7 @@ def validate_pw(plain_text: str, pw_hash):
     pt_bytes = plain_text.encode('utf-8')
     return bcrypt.checkpw(pt_bytes, pw_hash.encode('utf-8'))
 
+# create an auth token
 def make_jwt(name, role, id):
     encoded_jwt = jwt.encode({
         'name': name,
@@ -34,6 +35,7 @@ def make_jwt(name, role, id):
 
     return encoded_jwt
 
+# returns decoded token info, false if invalid
 def decode_jwt(token):
     result = False
     
@@ -44,21 +46,24 @@ def decode_jwt(token):
 
     return result
 
-# protected decorator for routes
-def protected(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('token')
-        payload = decode_jwt(token)
+# protected decorator for routes, passes user context to the route
+def protected_route(roles):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            token = request.cookies.get('token')
+            payload = decode_jwt(token)
 
-        if payload:
-            return f(payload, *args, **kwargs)
+            if payload and payload.get('role', None) in roles:
+                return f(payload, *args, **kwargs)
+            
+            return {'message': 'Invalid Authentication'}, 401
         
-        return {'message": "Invalid Authentication'}, 401
+        return wrapper
     
-    return decorated
+    return decorator
 
-# patient account creation
+# user account creation
 @auth_bp.route('/users/register', methods=['POST'])
 def user_register():
     name = request.json.get('name', '')

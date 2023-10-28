@@ -2,6 +2,7 @@ from flask import Flask
 import models
 import os
 from auth import auth_bp
+from api import api_bp
 
 # configuration and setup
 app = Flask(__name__)
@@ -16,6 +17,7 @@ with app.app_context():
 models.ma.init_app(app)
 
 app.register_blueprint(auth_bp)
+app.register_blueprint(api_bp)
 
 @app.route('/patients', methods=['GET'])
 def patients():
