@@ -111,7 +111,7 @@ def user_login():
     if valid:
         resp.status_code = 200
         token = make_jwt(potential_user['name'], user_role, potential_user['id'])
-        resp.set_cookie('token', token)
+        resp.set_cookie('token', token, httponly=True)
     else:
         resp.status_code = 401
 
@@ -120,6 +120,6 @@ def user_login():
 @auth_bp.route('/users/logout', methods=['POST'])
 def logout():
     resp = make_response({})
-    resp.set_cookie('token', '')
+    resp.set_cookie('token', '', httponly=True)
 
     return resp
