@@ -1,6 +1,6 @@
 import bcrypt
 from sqlalchemy.exc import IntegrityError
-from flask import request, make_response, Blueprint
+from flask import request, make_response, Blueprint, jsonify
 import models
 from dotenv import load_dotenv
 import os
@@ -100,22 +100,22 @@ def user_login():
     user_role = request.json.get('role', None)
 
     user = None
-    potential_user = None
+    user_schema = None
     if user_role == 'patient':
         user = models.Patient.query.filter_by(email=email).one()
-        potential_user = models.patient_schema.dump(user)
+        user_schema = models.patient_schema.dump(user)
     elif user_role == 'admin':
         user = models.Admin.query.filter_by(email=email).one()
-        potential_user = models.admin_schema.dump(user)
+        user_schema = models.admin_schema.dump(user)
     else:
         return {}, 401
     
-    valid = validate_pw(password_plaintext, potential_user['password_hash'])
+    valid = validate_pw(password_plaintext, user_schema['password_hash'])
     resp = make_response({})
     
     if valid:
         resp.status_code = 200
-        token = make_jwt(potential_user['name'], user_role, potential_user['id'])
+        token = make_jwt(user_schema['name'], user_role, user_schema['id'])
         resp.set_cookie('token', token, httponly=True)
     else:
         resp.status_code = 401
