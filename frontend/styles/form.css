@@ -1,15 +1,13 @@
 .form-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     border-radius: 15px;
 
     width: 600px;
 
     background-color: white;
-    margin: auto;
-    margin-top: 2rem;
+    margin: 2rem auto;
     padding: 1rem;
 }
 
@@ -38,7 +36,6 @@
 .form-field input:focus {
     outline: none !important;
     box-shadow: 0 0 2px black;
-    border-bottom: none;
 }
 
 .submit-button {
@@ -56,4 +53,3 @@
     cursor: pointer;
     background-color: #5e697e;
 }
-
