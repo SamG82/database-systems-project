@@ -1,48 +1,50 @@
 import "../../styles/appointments.css"
-import AppointmentRow from "../components/appointment-row"
+import AppointmentList from "../components/appointment-list"
 import { Link } from "react-router-dom"
 
-const testData = [
-    {
-        doctorName: "John",
-        startTime: "10:00",
-        endTime: "10:30",
-        hospitalName: "Test Hospital",
-        date: "10/02",
-        notes: "test notes for appointment testing data",
-    },
-    {
-        doctorName: "John",
-        startTime: "10:00",
-        endTime: "10:30",
-        hospitalName: "Test Hospital",
-        date: "10/02",
-        notes: "test notes for appointment testing data",
-    },
-    {
-        doctorName: "John",
-        startTime: "10:00",
-        endTime: "10:30",
-        hospitalName: "Test Hospital",
-        date: "10/02",
-        notes: "test notes for appointment testing data"
-    }
-]
-
 function Appointments() {
+    const testData = [
+        {
+            doctorName: "test doctor",
+            hospitalName: "test hospital",
+            startTime: "10:30",
+            endTime: "11:00",
+            date: "10/03"
+        },
+        {
+            doctorName: "longer doctor name example",
+            hospitalName: "longer hospital name example",
+            startTime: "10:30",
+            endTime: "11:00",
+            date: "10/21"
+        },
+        {
+            doctorName: "test doctor",
+            hospitalName: "test hospital",
+            startTime: "10:30",
+            endTime: "11:00",
+            date: "10/03"
+        },
+        {
+            doctorName: "test doctor",
+            hospitalName: "test hospital",
+            startTime: "10:30",
+            endTime: "11:00",
+            date: "10/03"
+        },
+        {
+            doctorName: "test doctor",
+            hospitalName: "test hospital",
+            startTime: "10:30",
+            endTime: "11:00",
+            date: "10/03"
+        },
+    ]
     return (
         <div className="appointments-main">
             <h1 className="appointments-title">Appointment Manager</h1>
-            <Link to={'/schedule'}>Schedule a new appointment</Link>
-            <div className="appointments-list">
-                <span className="column-title">Hospital</span>
-                <span className="column-title">Doctor</span>
-                <span className="column-title">Time</span>
-                <span className="column-title">Date</span>
-                {/* placeholder */}
-                <span></span>
-                {testData.map((appt, idx) => <AppointmentRow key={idx} appt={appt}/>)}
-            </div>
+            <Link to={'/schedule'} className="schedule-link">Schedule a new appointment</Link>
+            <AppointmentList appointments={testData}/>
         </div>
     )
 }

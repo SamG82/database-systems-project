@@ -1,6 +1,7 @@
 import Home from "./pages/home.tsx"
 import Appointments from "./pages/appointments.tsx"
 import AccountForm from "./components/account-form.tsx"
+import AdminLogin from "./pages/admin-login.tsx"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 
@@ -8,13 +9,13 @@ const loginFields = [
   {name: 'Email', type: 'text'},
   {name: 'Password', type: 'password'}
 ]
-
 const patientRegisterFields = [
   {name: 'Name', type: 'text'},
   {name: 'Address', type: 'text'},
   {name: 'Phone', type: 'text'},
   ...loginFields
 ]
+const adminFields = patientRegisterFields.filter((field) => field.name != "Phone")
 
 const patientLoginForm = 
   <AccountForm
@@ -37,6 +38,15 @@ const patientRegisterForm =
   errorMsg="An account already exists with that email"
   />
 
+const adminRegisterForm = 
+  <AccountForm
+  title="Admin Register"
+  fields={adminFields}
+  url="http://localhost:5000/users/register"
+  redirect="/admin-login"
+  role="admin"
+  errorMsg="An account already exists with that email"
+  />
 const router = createBrowserRouter([
   {
     path: "/",
@@ -53,6 +63,14 @@ const router = createBrowserRouter([
   {
     path: "/appointments",
     element: <Appointments/>
+  },
+  {
+    path: "/admin-login",
+    element: <AdminLogin/>
+  },
+  {
+    path: "/admin-register",
+    element: adminRegisterForm
   }
 ])
 

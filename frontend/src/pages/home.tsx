@@ -12,7 +12,7 @@ function Home() {
             <Link to={'/register'}>Register</Link>
           </div>
           <hr className="divider"></hr>
-          <button className="administrator-button">Administrator?</button>
+          <Link to="/admin-login" className="administrator-button">Administrator?</Link>
         </div>
       </div>
     </div>

@@ -1,18 +1,18 @@
+import "../../styles/appointments.css"
 
-type Appointment = {
+export type Appointment = {
     doctorName: string,
     hospitalName: string,
     startTime: string
     endTime: string,
-    date: string,
-    notes: string
+    date: string
 }
 
 type Props = {
     appt: Appointment
 }
 
-function AppointmentRow(props: Props) {
+export function AppointmentRow(props: Props) {
     return (
         <>
             <span>{props.appt.hospitalName}</span>
@@ -24,5 +24,3 @@ function AppointmentRow(props: Props) {
             
     )
 }
-
-export default AppointmentRow
