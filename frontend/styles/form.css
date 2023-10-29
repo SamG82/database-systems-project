@@ -4,10 +4,12 @@
     width: 600px;
     margin: 2rem auto;
     padding: 1rem;
+    color: black;
 }
 
 .form-title {
     font-size: 2rem;
+    min-height: 5rem;
 }
 
 .form-field {

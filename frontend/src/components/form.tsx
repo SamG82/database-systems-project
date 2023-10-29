@@ -5,27 +5,44 @@ import client from "../client"
 import "../../styles/form.css"
 
 type Field = {
-    name: string,
-    type: string
+    displayName: string,
+    type: string,
+    httpValue: string
 }
 
 type Props = {
     title: string,
     fields: Array<Field>,
     url: string,
-    redirect: string,
-    role: string,
+    redirect: string | null,
+    extraData: {[key: string]: string}
     errorMsg: string
 }
 
-function AccountForm(props: Props) {
+export const commonFields = {
+    login: [
+        makeField('Email', 'text', 'email'),
+        makeField('Password', 'password', 'password')
+    ]
+}
+export function makeField(displayName: string, type: string, httpValue: string): Field {
+    return {
+        displayName,
+        type,
+        httpValue
+    }
+}
+
+export function Form(props: Props) {
     const [error, setError] = useState<string>()
     const navigate = useNavigate()
     const [formFields, setFormFields] = useState<{[key: string]: string}>({})
 
     const submit = (e: React.MouseEvent) => {
         e.preventDefault()
-        client.post(props.url, {...formFields, role: props.role}).then(() => navigate(props.redirect)).catch(() => setError(props.errorMsg))
+        client.post(props.url, {...formFields, ...props.extraData}).then(() => {
+            if (props.redirect) { navigate(props.redirect)}
+        }).catch(() => setError(props.errorMsg))
     }
 
     const updateFormField = (fieldName: string, value: string) => {
@@ -39,11 +56,11 @@ function AccountForm(props: Props) {
             <form className="column-flex">
                 {props.fields.map((field: Field, i: number) => (
                     <div className="form-field" key={i}>
-                        <h2 className="form-field-name">{field.name}</h2>
+                        <h2 className="form-field-name">{field.displayName}</h2>
                         <input
-                        type={field.name}
-                        onChange={e => updateFormField(field.name.toLowerCase(), e.target.value)}
-                        value={formFields[field.name.toLowerCase()]}/>
+                        type={field.type}
+                        onChange={e => updateFormField(field.httpValue, e.target.value)}
+                        value={formFields[field.httpValue]}/>
                     </div>
                 ))}
             </form>
@@ -52,5 +69,3 @@ function AccountForm(props: Props) {
         </div>
     )
 }
-
-export default AccountForm

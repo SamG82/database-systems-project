@@ -1,11 +1,7 @@
-import AccountForm from "../components/account-form"
+import { commonFields, Form } from "../components/form"
 import { Link } from "react-router-dom"
 
 function AdminLogin() {
-    const adminLoginFields = [
-        {name: "Email", type: "text"},
-        {name: "Password", type: "password"}
-    ]
 
     // using js styles because it's very minimal
     const style: React.CSSProperties = {
@@ -21,12 +17,12 @@ function AdminLogin() {
     }
     return (
         <div className="admin-login" style={style}>
-            <AccountForm
+            <Form
             title="Admin Login"
-            fields={adminLoginFields}
+            fields={commonFields.login}
             url="/users/login"
             redirect="/dashboard"
-            role="admin"
+            extraData={{"role": "admin"}}
             errorMsg="Invalid username or password"
             />
             <Link style={linkStyle} to="/admin-register">Don't have an administrator account?</Link>

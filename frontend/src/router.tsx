@@ -1,51 +1,47 @@
 import Home from "./pages/home.tsx"
 import Appointments from "./pages/appointments.tsx"
-import AccountForm from "./components/account-form.tsx"
+import { makeField, commonFields, Form } from "./components/form.tsx"
 import AdminLogin from "./pages/admin-login.tsx"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import AdminDashboard from "./pages/admin-dashboard.tsx"
 
 
-const loginFields = [
-  {name: 'Email', type: 'text'},
-  {name: 'Password', type: 'password'}
-]
 const patientRegisterFields = [
-  {name: 'Name', type: 'text'},
-  {name: 'Address', type: 'text'},
-  {name: 'Phone', type: 'text'},
-  ...loginFields
+  makeField('Name', 'text', 'name'),
+  makeField('Address', 'text', 'address'),
+  makeField('Phone', 'text', 'phone'),
+  ...commonFields.login
 ]
-const adminFields = patientRegisterFields.filter((field) => field.name != "Phone")
+const adminFields = patientRegisterFields.filter((field) => field.displayName != "Phone")
 
 const patientLoginForm = 
-  <AccountForm
+  <Form
   title="Login"
-  fields={loginFields}
+  fields={commonFields.login}
   url="/users/login"
   redirect="/appointments"
-  role="patient"
+  extraData={{"role": "patient"}}
   errorMsg="Invalid username or password"
   />
 
 
 const patientRegisterForm = 
-  <AccountForm
+  <Form
   title="Register"
   fields={patientRegisterFields}
   url="/users/register"
   redirect="/login"
-  role="patient"
+  extraData={{"role": "patient"}}
   errorMsg="An account already exists with that email"
   />
 
 const adminRegisterForm = 
-  <AccountForm
+  <Form
   title="Admin Register"
   fields={adminFields}
   url="/users/register"
   redirect="/admin-login"
-  role="admin"
+  extraData={{"role": "admin"}}
   errorMsg="An account already exists with that email"
   />
 const router = createBrowserRouter([
