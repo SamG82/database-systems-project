@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import cross_origin
 import models
 import os
 from auth import auth_bp
@@ -22,12 +23,14 @@ app.register_blueprint(api_bp)
 
 # routes for testing
 @app.route('/patients', methods=['GET'])
+@cross_origin()
 def patients():
     all_patients = models.Patient.query.all()
     results = models.patients_schema.dump(all_patients)
     return results
 
 @app.route('/admins', methods=['GET'])
+@cross_origin()
 def admins():
     all_admins = models.Admin.query.all()
     results = models.admins_schema.dump(all_admins)

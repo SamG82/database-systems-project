@@ -53,3 +53,9 @@
     cursor: pointer;
     background-color: #5e697e;
 }
+
+.error-box {
+    color: rgba(219, 36, 4, 0.938);
+    font-size: 1.6rem;
+    margin: 2rem 0;
+}

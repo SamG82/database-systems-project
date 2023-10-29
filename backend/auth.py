@@ -1,6 +1,7 @@
 import bcrypt
 from sqlalchemy.exc import IntegrityError
-from flask import request, make_response, Blueprint, jsonify
+from flask import request, make_response, Blueprint
+from flask_cors import cross_origin
 import models
 from dotenv import load_dotenv
 import os
@@ -65,14 +66,15 @@ def protected_route(roles):
 
 # user account creation
 @auth_bp.route('/users/register', methods=['POST'])
+@cross_origin()
 def user_register():
-    name = request.json.get('name', None)
-    phone = request.json.get('phone', None)
-    address = request.json.get('address', None)
-    email = request.json.get('email', None)
-    password_plaintext = request.json.get('password', None)
+    name = request.json.get('name', '')
+    phone = request.json.get('phone','')
+    address = request.json.get('address', '')
+    email = request.json.get('email', '')
+    password_plaintext = request.json.get('password', '')
 
-    user_role = request.json.get('role', None)
+    user_role = request.json.get('role', '')
     pw_hash = hash_pw(password_plaintext)
 
     new_user = None
@@ -94,20 +96,24 @@ def user_register():
     
 # patient login
 @auth_bp.route('/users/login', methods=['POST'])
+@cross_origin()
 def user_login():
-    email = request.json.get('email', None)
-    password_plaintext = request.json.get('password', None)
-    user_role = request.json.get('role', None)
+    email = request.json.get('email', '')
+    password_plaintext = request.json.get('password', '')
+    user_role = request.json.get('role', '')
 
     user = None
     user_schema = None
     if user_role == 'patient':
-        user = models.Patient.query.filter_by(email=email).one()
+        user = models.Patient.query.filter_by(email=email).one_or_none()
         user_schema = models.patient_schema.dump(user)
     elif user_role == 'admin':
-        user = models.Admin.query.filter_by(email=email).one()
+        user = models.Admin.query.filter_by(email=email).one_or_none()
         user_schema = models.admin_schema.dump(user)
     else:
+        return {}, 401
+    
+    if user == None:
         return {}, 401
     
     valid = validate_pw(password_plaintext, user_schema['password_hash'])
@@ -123,6 +129,7 @@ def user_login():
     return resp
 
 @auth_bp.route('/users/logout', methods=['POST'])
+@cross_origin()
 def logout():
     resp = make_response({})
     resp.set_cookie('token', '', httponly=True)

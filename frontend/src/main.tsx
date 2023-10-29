@@ -1,14 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from "react"
+import ReactDOM from "react-dom/client"
 
-import Home from './pages/home.tsx'
-import { Form, fields } from './components/user-form.tsx'
-
-
-import Appointments from './pages/appointments.tsx'
+import Home from "./pages/home.tsx"
+import Appointments from "./pages/appointments.tsx"
+import PatientLogin from "./pages/patient-login.tsx"
+import PatientRegister from "./pages/patient-register.tsx"
 
 import "../styles/index.css"
-
 import {
   createBrowserRouter,
   RouterProvider,
@@ -21,11 +19,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Form title="Login" fields={fields.loginFields}/>
+    element: <PatientLogin/>
   },
   {
     path: "/register",
-    element: <Form title="Register" fields={fields.patientRegisterFields}/>
+    element: <PatientRegister/>
   },
   {
     path: "/appointments",
