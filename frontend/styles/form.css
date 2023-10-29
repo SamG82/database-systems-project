@@ -1,12 +1,7 @@
 .form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     border-radius: 15px;
 
     width: 600px;
-
-    background-color: white;
     margin: 2rem auto;
     padding: 1rem;
 }
@@ -17,12 +12,6 @@
 
 .form-field {
     margin-top: 1.2rem;
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .form-field input {

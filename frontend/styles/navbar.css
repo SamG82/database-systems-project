@@ -1,0 +1,32 @@
+
+.navbar {
+    font-size: 1rem;
+    text-align: center;
+    color: black;
+    text-align: left;
+    padding-left: 4rem;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.navbar-title {
+    padding: 1rem 0;
+}
+.nav-links {
+    flex: 1;
+}
+
+.nav-link {
+    padding: 2rem 3rem;
+    border: none;
+    background-color: white;
+    font-size: 1.9rem;
+}
+
+.nav-link:hover {
+    background-color: rgb(226, 226, 226);
+    cursor: pointer;
+    text-decoration: underline;
+}

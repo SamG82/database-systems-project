@@ -3,10 +3,10 @@ import { Link } from "react-router-dom"
 
 function Home() {
   return (
-    <div className="main">
+    <div className="main column-flex">
       <div className="main-content">
         <h1 className="title">Appointment Manager</h1>
-        <div className="account-options">
+        <div className="account-options column-flex">
           <div className="patient-options">
             <Link to={'/login'}>Log in</Link>
             <Link to={'/register'}>Register</Link>

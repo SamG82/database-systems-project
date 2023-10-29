@@ -1,11 +1,10 @@
-import bcrypt
-from sqlalchemy.exc import IntegrityError
 from flask import request, make_response, Blueprint
-from flask_cors import cross_origin
+from sqlalchemy.exc import IntegrityError
 import models
 from dotenv import load_dotenv
 import os
 import jwt
+import bcrypt
 from functools import wraps
 
 load_dotenv()
@@ -66,7 +65,6 @@ def protected_route(roles):
 
 # user account creation
 @auth_bp.route('/users/register', methods=['POST'])
-@cross_origin()
 def user_register():
     name = request.json.get('name', '')
     phone = request.json.get('phone','')
@@ -96,7 +94,6 @@ def user_register():
     
 # patient login
 @auth_bp.route('/users/login', methods=['POST'])
-@cross_origin()
 def user_login():
     email = request.json.get('email', '')
     password_plaintext = request.json.get('password', '')
@@ -129,7 +126,6 @@ def user_login():
     return resp
 
 @auth_bp.route('/users/logout', methods=['POST'])
-@cross_origin()
 def logout():
     resp = make_response({})
     resp.set_cookie('token', '', httponly=True)

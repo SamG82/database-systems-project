@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import client from "../client"
 
 import "../../styles/form.css"
 
@@ -24,9 +24,8 @@ function AccountForm(props: Props) {
     const [formFields, setFormFields] = useState<{[key: string]: string}>({})
 
     const submit = (e: React.MouseEvent) => {
-        console.log(formFields)
         e.preventDefault()
-        axios.post(props.url, {...formFields, role: props.role}).then(() => navigate(props.redirect)).catch(() => setError(props.errorMsg))
+        client.post(props.url, {...formFields, role: props.role}).then(() => navigate(props.redirect)).catch(() => setError(props.errorMsg))
     }
 
     const updateFormField = (fieldName: string, value: string) => {
@@ -35,9 +34,9 @@ function AccountForm(props: Props) {
         setFormFields(copy)
     }
     return (
-        <div className="form-container">
+        <div className="form-container column-flex main-theme">
             <h1 className="form-title">{props.title}</h1>
-            <form className="form">
+            <form className="column-flex">
                 {props.fields.map((field: Field, i: number) => (
                     <div className="form-field" key={i}>
                         <h2 className="form-field-name">{field.name}</h2>

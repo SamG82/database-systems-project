@@ -24,7 +24,7 @@ function AdminLogin() {
             <AccountForm
             title="Admin Login"
             fields={adminLoginFields}
-            url="http://localhost:5000/users/login"
+            url="/users/login"
             redirect="/dashboard"
             role="admin"
             errorMsg="Invalid username or password"

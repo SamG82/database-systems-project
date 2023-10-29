@@ -42,7 +42,7 @@ function Appointments() {
     ]
     return (
         <div className="appointments-main">
-            <h1 className="appointments-title">Appointment Manager</h1>
+            <h1 className="header-title">Appointments</h1>
             <Link to={'/schedule'} className="schedule-link">Schedule a new appointment</Link>
             <AppointmentList appointments={testData}/>
         </div>

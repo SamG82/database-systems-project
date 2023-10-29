@@ -9,3 +9,13 @@ html, body, #root, main {
     height: 100%;
     background-color: #34373b;
 }
+
+.column-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-theme {
+    background-color: white;
+}
