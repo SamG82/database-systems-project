@@ -14,9 +14,10 @@ type Props = {
     title: string,
     fields: Array<Field>,
     url: string,
-    redirect: string | null,
-    extraData: {[key: string]: string}
-    errorMsg: string
+    redirect?: string,
+    extraData: {[key: string]: string},
+    errorMsg: string,
+    afterSubmit?: Function
 }
 
 export const commonFields = {
@@ -43,6 +44,7 @@ export function Form(props: Props) {
         client.post(props.url, {...formFields, ...props.extraData}).then(() => {
             if (props.redirect) { navigate(props.redirect)}
         }).catch(() => setError(props.errorMsg))
+        if (props.afterSubmit) { props.afterSubmit() } 
     }
 
     const updateFormField = (fieldName: string, value: string) => {
