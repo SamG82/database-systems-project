@@ -3,10 +3,13 @@
     display: grid;
     gap: 1rem;
     padding: 1rem;
+    align-items: center;
+    text-align: center;
 }
 
 .column-title {
     font-weight: bold;
+    margin-bottom: 1rem;
 }
 
 .list-items span {

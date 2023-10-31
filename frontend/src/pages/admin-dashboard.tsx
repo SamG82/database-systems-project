@@ -35,8 +35,25 @@ const doctoFields = [
 ]
 
 function DoctorList(props: {doctors: Array<doctor>}) {
+    const removeDoctor = (id: number) => {
+        client.delete(`/doctor/${id}`,{withCredentials: true}).then(() => navigate(0))
+    }
+
+    const changeAvailabiltiy = (id: number, change: boolean) => {
+        client.patch(`/doctor/${id}`, {"availability": change}, {withCredentials: true}).then(() => navigate(0))
+    }
+
     const data = props.doctors.map((doctor, _) => (
-        [doctor.name, doctor.specialization]
+        [
+            doctor.name,
+            doctor.specialization,
+            doctor.available ?
+            <button onClick={_ => changeAvailabiltiy(doctor.id, false)} className="doctor-button available">Available</button>
+            : <button onClick={_ => changeAvailabiltiy(doctor.id, true)} className="doctor-button unavailable">Unavailable</button>
+            ,
+            <button onClick={_ => removeDoctor(doctor.id)} className="remove-doctor doctor-button">Delete</button>
+
+        ]
     ))
 
     const navigate = useNavigate()
@@ -45,6 +62,7 @@ function DoctorList(props: {doctors: Array<doctor>}) {
         <div className="doctors-list">
             <Popup
             trigger={<button className="add-doctors-button">Add Doctor</button>}
+            position="right center"
             >
                 <Form
                 title="New doctor info"
@@ -59,10 +77,8 @@ function DoctorList(props: {doctors: Array<doctor>}) {
             <h2 className="doctors-hint">Doctors you add will appear here</h2>
             :
             <ItemsList
-            features={["Name", "Specialization"]}
-            dataItems={data}>
-                <button>Make available</button>
-            </ItemsList>
+            features={["Name", "Specialization", "Toggle Availability", ""]}
+            dataItems={data}/>
             }
         </div>
     )
@@ -80,11 +96,7 @@ type dashboardData = {
     doctors: Array<doctor>
 }
 
-type dashboardProps = {
-    data: dashboardData
-}
-
-function MainDashboard({data}: dashboardProps) {
+function MainDashboard({data}: {data: dashboardData}) {
     const [selected, setSelected] = useState<number>(0)
     const buttonNames = ["Manage doctors", "Appointments"]
 
@@ -122,7 +134,6 @@ function AdminDashboard() {
     const [loading, setLoading] = useState<boolean>(true)
     const getAdminDetails = () => {
         client.get("/dashboard", {withCredentials: true}).then(response => {
-            console.log(response.data)
             setDashboard(response.data)
             setLoading(false)
         }).catch(_ => navigate("/admin-login"))

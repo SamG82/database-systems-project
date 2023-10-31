@@ -64,6 +64,32 @@ def create_doctor(user_context):
     except IntegrityError:
         models.db.session.rollback()
         return {}, 500
+
+@api_bp.route('/doctor/<id>', methods=['DELETE'])
+@protected_route(['admin'])
+def delete_doctor(user_context, id):
+    doctor = models.Doctor.query.get_or_404(id)
+    admin = models.Admin.query.get(user_context['id'])
+    
+    if doctor in admin.hospital.doctors:
+        models.db.session.delete(doctor)
+        models.db.session.commit()
+        return {}, 200
+    else:
+        return {}, 401
+
+@api_bp.route('/doctor/<id>', methods=['PATCH'])
+@protected_route(['admin'])
+def update_doctor_availability(user_context, id):
+    doctor = models.Doctor.query.get_or_404(id)
+    admin = models.Admin.query.get(user_context['id'])
+
+    if doctor in admin.hospital.doctors:
+        doctor.available = request.json['availability']
+        models.db.session.commit()
+        return {}, 200
+    else:
+        return {}, 500
     
 # returns dashboard data for an admin
 @api_bp.route('/dashboard', methods=['GET'])
