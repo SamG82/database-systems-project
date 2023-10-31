@@ -34,19 +34,6 @@ def create_hospital(user_context):
         models.db.session.rollback()
         return {}, 500
 
-# gets list of doctors for a hospital
-@api_bp.route('/doctor', methods=['GET'])
-@protected_route(['admin', 'patient'])
-def get_doctors(user_context):
-    if user_context['role'] == 'admin':
-        admin = models.Admin.query.get_or_404(user_context['id'])
-        doctors = models.doctors_schema.dump(admin.hospital.doctors)
-        return {'doctors': doctors}, 200
-    elif user_context['role'] == 'patient':
-        hospital_id = request.json.get('hospital_id')
-        hospital = models.Hospital.query.get(hospital_id)
-        return models.doctors_schema.dump(hospital.doctors)
-    
 # creates a doctor for an admin's hospital
 @api_bp.route('/doctor', methods=['POST'])
 @protected_route(['admin'])
@@ -65,6 +52,7 @@ def create_doctor(user_context):
         models.db.session.rollback()
         return {}, 500
 
+# delete a doctor record
 @api_bp.route('/doctor/<id>', methods=['DELETE'])
 @protected_route(['admin'])
 def delete_doctor(user_context, id):
@@ -78,6 +66,7 @@ def delete_doctor(user_context, id):
     else:
         return {}, 401
 
+# change a doctor's availability status for admins
 @api_bp.route('/doctor/<id>', methods=['PATCH'])
 @protected_route(['admin'])
 def update_doctor_availability(user_context, id):
