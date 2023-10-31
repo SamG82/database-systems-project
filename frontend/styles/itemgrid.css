@@ -1,0 +1,14 @@
+
+.list-items {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.column-title {
+    font-weight: bold;
+}
+
+.list-items span {
+    font-size: 1.5rem;
+}

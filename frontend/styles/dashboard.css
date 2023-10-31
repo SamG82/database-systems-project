@@ -1,9 +1,112 @@
 .main-dashboard {
     color: white;
+    min-width: 1200px;
 }
 
 .hospital-register-form {
     color: black;
     background-color: white;
-    width: 600px;
+}
+
+.admin-dashboard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-container {
+    flex: 1;
+    display: flex;
+}
+
+.main-dashboard {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    color: black;
+    border-radius: 15px;
+
+    width: 60%;
+    margin: 3rem auto;
+}
+
+.hospital-title {
+    font-size: 2.3rem;
+    margin-left: 2rem;
+}
+
+.dashboard-nav {
+    border-bottom: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.dashboard-nav-buttons {
+    display: flex;
+    width: 50%;
+}
+
+.dashboard-nav-button {
+    padding: 2rem;
+    border: none;
+    font-size: 1.4rem;
+    flex: 1;
+    background-color: white;
+}
+
+.dashboard-nav-button-active {
+    padding: 2rem;
+    border: none;
+    font-size: 1.4rem;
+    flex: 1;
+    background-color: rgb(235, 235, 235);
+    text-decoration: underline;
+}
+
+.dashboard-nav-button-active:hover {
+    cursor: pointer;
+}
+.dashboard-nav-button:hover {
+    cursor: pointer;
+    background-color: rgb(235, 235, 235);
+}
+
+.doctors-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.add-doctors-button {
+    background: rgb(9, 108, 255);
+    color: white;
+    font-weight: bold;
+    font-size: 2rem;
+    border: none;
+    border-radius: 5px;
+    padding: 0.9rem 1.7rem;
+
+}
+
+.add-doctors-button:hover {
+    background: rgb(64, 141, 255);
+    cursor: pointer;
+}
+.doctors-hint {
+    color: black;
+    font-weight: 100;
+    margin-top: 8rem;
+}
+
+.popup-overlay {
+    background-color: black;
+    opacity: 0.4;
+}
+
+.list-items {
+    width: 80%;
+    margin: 1.5rem;
 }

@@ -6,6 +6,8 @@
     padding: 1rem;
     color: black;
     gap: 2rem;
+
+    max-height: 770px;
 }
 
 .form-title {
