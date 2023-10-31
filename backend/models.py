@@ -27,6 +27,21 @@ class Patient(db.Model):
 patient_schema = PatientSchema()
 patients_schema = PatientSchema(many=True)
 
+class DoctorSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'specialization', 'available')
+
+class Doctor(db.Model):
+    __tablename__ = 'doctor'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False, unique=True)
+    specialization = db.Column(db.String(30), nullable=False)
+    available = db.Column(db.Boolean(), default=True)
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
+    
+doctor_schema = DoctorSchema()
+doctors_schema = DoctorSchema(many=True)
+
 class HospitalSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'address', 'close_time', 'open_time', 'phone')
@@ -40,7 +55,7 @@ class Hospital(db.Model):
     close_time = db.Column(db.String(20), nullable=False)
     open_time = db.Column(db.String(20), nullable=False)
     phone = db.Column(db.Integer, unique=True, nullable=False)
-
+    doctors = db.relationship('Doctor', uselist=True, backref='admin')
     def __init__(self, name, address, close_time, open_time, phone):
         self.name = name
         self.address = address
