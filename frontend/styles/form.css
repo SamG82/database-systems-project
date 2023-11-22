@@ -16,9 +16,10 @@
 
 .form-field {
     margin-top: 1.2rem;
+    width: 100%;
 }
 
-.form-field input {
+.form-field-input {
     padding: 0.4rem;
     margin-top: 0.2rem;
     border: none;
@@ -26,7 +27,7 @@
     font-size: 2rem;
 }
 
-.form-field input:focus {
+.form-field-input:focus {
     outline: none !important;
     box-shadow: 0 0 2px black;
 }
@@ -51,4 +52,13 @@
     color: rgba(219, 36, 4, 0.938);
     font-size: 1.6rem;
     margin: 2rem 0;
+}
+
+.react-time-picker {
+    width: 100%;
+    font-size: 2rem;
+}
+
+.react-time-picker button {
+    padding: 1rem;
 }

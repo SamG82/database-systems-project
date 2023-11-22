@@ -124,8 +124,8 @@ const hospitalRegisterFields = [
     makeField('Hospital Name', 'text', 'name'),
     makeField('Address', 'text', 'address'),
     makeField('Phone Contact', 'text', 'phone'),
-    makeField('Opening time', 'text', 'open_time'),
-    makeField('Closing time', 'text', 'close_time')
+    makeField('Opening time', 'time', 'open_time'),
+    makeField('Closing time', 'time', 'close_time')
 ]
 
 function AdminDashboard() {
