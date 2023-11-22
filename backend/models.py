@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from datetime import datetime
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -54,15 +55,15 @@ class Hospital(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
     name = db.Column(db.String(50), unique=True, nullable=False)
     address = db.Column(db.String(50), unique=True, nullable=False)
-    close_time = db.Column(db.String(20), nullable=False)
-    open_time = db.Column(db.String(20), nullable=False)
+    close_time = db.Column(db.Time, nullable=False)
+    open_time = db.Column(db.Time, nullable=False)
     phone = db.Column(db.Integer, unique=True, nullable=False)
     doctors = db.relationship('Doctor', uselist=True, backref='admin')
     def __init__(self, name, address, close_time, open_time, phone):
         self.name = name
         self.address = address
-        self.close_time = close_time
-        self.open_time = open_time
+        self.close_time = datetime.strptime(close_time, '%H:%M').time()
+        self.open_time = datetime.strptime(open_time, '%H:%M').time()
         self.phone = phone
 
 hospital_schema = HospitalSchema()
@@ -108,12 +109,12 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'))
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
-    start_time = db.Column(db.String(20), nullable=False)
-    end_time = db.Column(db.String(20), nullable=False)
-    date = db.Column(db.String(20), nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    date = db.Column(db.Date, nullable=False)
     patient_concerns = db.Column(db.String(150))
     patient_review = db.Column(db.String(150))
     patient_satisfaction = db.Column(db.Integer)
-
+    
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)

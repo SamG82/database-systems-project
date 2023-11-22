@@ -2,6 +2,7 @@ from flask import request, Blueprint
 from auth import protected_route
 import models
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 
 api_bp = Blueprint('api', 'api')
 
@@ -113,11 +114,10 @@ def create_appointment(user_context):
     patient_concerns = request.json.get('patient_concerns', '')
     patient_review = request.json.get('patient_review', '')
     patient_satisfaction = request.json.get('patient_satisfaction', '')
-
     appt = models.Appointment(
-        start_time=start_time,
-        end_time=end_time,
-        date=date,
+        start_time=datetime.strptime(start_time, '%H:%M').time(),
+        end_time=datetime.strptime(end_time, '%H:%M').time(),
+        date=datetime.strptime(date, '%Y-%m-%d').date(),
         patient_concerns=patient_concerns,
         patient_review=patient_review,
         patient_satisfaction=patient_satisfaction
