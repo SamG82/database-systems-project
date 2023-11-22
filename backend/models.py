@@ -16,6 +16,7 @@ class Patient(db.Model):
     address = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(25), unique=True, nullable=False)
     password_hash = db.Column(db.String(100), nullable=False)
+    appointments = db.relationship('Appointment', uselist=True, backref='Patient')
 
     def __init__(self, name, phone, address, email, pw_hash):
         self.name = name
@@ -38,7 +39,8 @@ class Doctor(db.Model):
     specialization = db.Column(db.String(30), nullable=False)
     available = db.Column(db.Boolean(), default=True)
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
-    
+    appointments = db.relationship('Appointment', uselist=True, backref='Doctor')
+
 doctor_schema = DoctorSchema()
 doctors_schema = DoctorSchema(many=True)
 
@@ -87,3 +89,31 @@ class Admin(db.Model):
 
 admin_schema = AdminSchema()
 admins_schema = AdminSchema(many=True)
+
+class AppointmentSchema(ma.Schema):
+    class Meta:
+        fields = (
+            'doctor_id',
+            'patient_id',
+            'start_time',
+            'end_time',
+            'date',
+            'patient_concerns',
+            'patient_review',
+            'patient_satisfaction'
+        )
+
+class Appointment(db.Model):
+    __tablename__ = 'appointment'
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'))
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
+    start_time = db.Column(db.String(20), nullable=False)
+    end_time = db.Column(db.String(20), nullable=False)
+    date = db.Column(db.String(20), nullable=False)
+    patient_concerns = db.Column(db.String(150))
+    patient_review = db.Column(db.String(150))
+    patient_satisfaction = db.Column(db.Integer)
+
+appointment_schema = AppointmentSchema()
+appointments_schema = AppointmentSchema(many=True)

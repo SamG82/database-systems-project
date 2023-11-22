@@ -1,9 +1,9 @@
 import Home from "./pages/home.tsx"
-import Appointments from "./pages/appointments.tsx"
 import { makeField, commonFields, Form } from "./components/form.tsx"
 import AdminLogin from "./pages/admin-login.tsx"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import AdminDashboard from "./pages/admin-dashboard.tsx"
+import PatientPortal from "./pages/patient-portal.tsx"
 
 
 const patientRegisterFields = [
@@ -58,8 +58,8 @@ const router = createBrowserRouter([
     element: patientRegisterForm
   },
   {
-    path: "/appointments",
-    element: <Appointments/>
+    path: "/patient-portal",
+    element: <PatientPortal/>
   },
   {
     path: "/admin-login",

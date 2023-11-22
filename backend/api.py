@@ -79,7 +79,14 @@ def update_doctor_availability(user_context, id):
         return {}, 200
     else:
         return {}, 500
-    
+
+# gets a list of hospitals for patients
+@api_bp.route('/hospitals', methods=['GET'])
+@protected_route(['patient'])
+def all_hospitals(user_context):
+    hospitals = models.Hospital.query.all()
+    return models.hospitals_schema.dump(hospitals)
+
 # returns dashboard data for an admin
 @api_bp.route('/dashboard', methods=['GET'])
 @protected_route(['admin'])
@@ -94,3 +101,34 @@ def get_dashboard(user_context):
         'hospital': models.hospital_schema.dump(admin.hospital),
         'doctors': models.doctors_schema.dump(doctors)
     }
+
+# creates an appointment for a patient
+@api_bp.route('/appointment', methods=['POST'])
+@protected_route(['patient'])
+def create_appointment(user_context):
+    doctor_id = request.json.get('doctor_id', '')
+    start_time = request.json.get('start_time', '')
+    end_time = request.json.get('end_time', '')
+    date = request.json.get('date', '')
+    patient_concerns = request.json.get('patient_concerns', '')
+    patient_review = request.json.get('patient_review', '')
+    patient_satisfaction = request.json.get('patient_satisfaction', '')
+
+    appt = models.Appointment(
+        start_time=start_time,
+        end_time=end_time,
+        date=date,
+        patient_concerns=patient_concerns,
+        patient_review=patient_review,
+        patient_satisfaction=patient_satisfaction
+    )
+    
+    patient = models.Patient.query.get_or_404(user_context['id'])
+    doctor = models.Doctor.query.get_or_404(doctor_id)
+
+    patient.appointments.append(appt)
+    doctor.appointments.append(appt)
+
+    models.db.session.add(appt)
+    models.db.session.commit()
+    return {}, 200
