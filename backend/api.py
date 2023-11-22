@@ -2,7 +2,7 @@ from flask import request, Blueprint
 from auth import protected_route
 import models
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 api_bp = Blueprint('api', 'api')
 
@@ -108,23 +108,24 @@ def get_dashboard(user_context):
 @protected_route(['patient'])
 def create_appointment(user_context):
     doctor_id = request.json.get('doctor_id', '')
-    start_time = request.json.get('start_time', '')
-    end_time = request.json.get('end_time', '')
+    doctor = models.Doctor.query.get_or_404(doctor_id)
+
+    start_input = request.json.get('start_time', '')
+    end_input = request.json.get('end_time', '')
+
+    start = datetime.strptime(start_input, '%H:%M')
+    end = datetime.strptime(end_input, '%H:%M')
     date = request.json.get('date', '')
+
     patient_concerns = request.json.get('patient_concerns', '')
-    patient_review = request.json.get('patient_review', '')
-    patient_satisfaction = request.json.get('patient_satisfaction', '')
     appt = models.Appointment(
-        start_time=datetime.strptime(start_time, '%H:%M').time(),
-        end_time=datetime.strptime(end_time, '%H:%M').time(),
+        start_time=start.time(),
+        end_time=end.time(),
         date=datetime.strptime(date, '%Y-%m-%d').date(),
-        patient_concerns=patient_concerns,
-        patient_review=patient_review,
-        patient_satisfaction=patient_satisfaction
+        patient_concerns=patient_concerns
     )
     
     patient = models.Patient.query.get_or_404(user_context['id'])
-    doctor = models.Doctor.query.get_or_404(doctor_id)
 
     patient.appointments.append(appt)
     doctor.appointments.append(appt)
@@ -132,3 +133,40 @@ def create_appointment(user_context):
     models.db.session.add(appt)
     models.db.session.commit()
     return {}, 200
+
+# gets all appointments for a patient
+@api_bp.route('/appointment/patient', methods=['GET'])
+@protected_route(['patient'])
+def patient_appointments(user_context):
+    patient = models.Patient.query.get_or_404(user_context['id'])
+    return models.appointments_schema.dump(patient.appointments)
+
+# gets valid appointments time for a specific date and doctor
+@api_bp.route('/appointment/times', methods=['GET'])
+@protected_route(['patient'])
+def get_valid_times(user_context):
+    date = datetime.strptime(request.json['date'], '%Y-%m-%d').date()
+    doctor = models.Doctor.query.get(request.json['doctor_id'])
+
+    hospital = models.Hospital.query.get(doctor.hospital_id)
+    appts_on_date = models.Appointment.query.filter_by(date=date).all()
+
+    start = datetime.combine(date.today(), hospital.open_time)
+    end = datetime.combine(date.today(), hospital.close_time)
+
+    intervals = int((end-start) / timedelta(minutes=30))
+    segments = [(start + timedelta(minutes=30*i),
+                 (start + timedelta(minutes=30*(i + 1))))
+                 for i in range(intervals)]
+    taken_times = [appt.start_time for appt in appts_on_date]
+
+    valid_times = []
+    for seg in segments:
+        if seg[0].time() not in taken_times:
+            valid_time = {
+                "start": str(seg[0]),
+                "end": str(seg[1])
+            }
+            valid_times.append(valid_time)
+
+    return valid_times
