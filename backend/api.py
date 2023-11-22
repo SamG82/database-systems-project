@@ -135,11 +135,21 @@ def create_appointment(user_context):
     return {}, 200
 
 # gets all appointments for a patient
-@api_bp.route('/appointment/patient', methods=['GET'])
+@api_bp.route('/portal', methods=['GET'])
 @protected_route(['patient'])
-def patient_appointments(user_context):
+def patient_portal(user_context):
     patient = models.Patient.query.get_or_404(user_context['id'])
-    return models.appointments_schema.dump(patient.appointments)
+    appts = models.appointments_schema.dump(patient.appointments)
+    for i, apt in enumerate(patient.appointments):
+        doctor = models.Doctor.query.get(apt.doctor_id)
+        appts[i]['doctor_name'] = doctor.name
+        hospital = models.Hospital.query.get(doctor.hospital_id)
+        appts[i]['hospital_name'] = hospital.name
+
+    return {
+        "name": patient.name,
+        "appointments": appts
+    }
 
 # gets valid appointments time for a specific date and doctor
 @api_bp.route('/appointment/times', methods=['GET'])

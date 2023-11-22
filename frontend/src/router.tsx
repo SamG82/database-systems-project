@@ -19,7 +19,7 @@ const patientLoginForm =
   title="Login"
   fields={commonFields.login}
   url="/users/login"
-  redirect="/appointments"
+  redirect="/portal"
   extraData={{"role": "patient"}}
   errorMsg="Invalid username or password"
   />
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
     element: patientRegisterForm
   },
   {
-    path: "/patient-portal",
+    path: "/portal",
     element: <PatientPortal/>
   },
   {
