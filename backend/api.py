@@ -86,7 +86,12 @@ def update_doctor_availability(user_context, id):
 @protected_route(['patient'])
 def all_hospitals(user_context):
     hospitals = models.Hospital.query.all()
-    return models.hospitals_schema.dump(hospitals)
+    hospitals_json = models.hospitals_schema.dump(hospitals)
+    
+    for i, hospital in enumerate(hospitals):
+        hospitals_json[i]['doctors'] = models.doctors_schema.dump(hospital.doctors)
+
+    return hospitals_json
 
 # returns dashboard data for an admin
 @api_bp.route('/dashboard', methods=['GET'])

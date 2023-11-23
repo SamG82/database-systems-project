@@ -33,16 +33,33 @@
 .appointment-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 1rem;
     border-bottom: 1px solid black;
 }
 
-.search {
-    flex: 1;
-    text-align: center;
+.appointment-buttons {
+    display: flex;
+    gap: 1rem;
 }
 
-.schedule-button {
+.appointments-button {
+    background: rgb(64, 141, 255);
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 5px;
+    padding: 0.9rem 1.7rem;
+}
+
+.appointments-button:hover {
+    cursor: pointer;
+    background: rgb(9, 108, 255);
+    text-decoration: underline;
+}
+
+.appointments-button-active {
     background: rgb(9, 108, 255);
     color: white;
     font-weight: bold;
@@ -52,9 +69,45 @@
     padding: 0.9rem 1.7rem;
 }
 
+.appointments-button-active:hover {
+    cursor: pointer;
+}
+
 .no-appointments {
     text-align: center;
     font-size: 1.5rem;
     margin-top: 2rem;
     color: rgb(83, 83, 83);
+}
+
+.appointment-scheduler {
+    background-color: white;
+    border-radius: 15px;
+}
+
+.hospital-selector {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.hospital-selector-title {
+    margin: 2rem 0;
+}
+.hospital-list {
+    display: flex;
+    gap: 2rem;
+}
+
+.hospital-listing {
+    padding: 1rem;
+    border: 1px solid black;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    background-color: white;
+}
+
+.hospital-listing:hover {
+    cursor: pointer;
+    background-color: rgb(236, 236, 236);
 }
