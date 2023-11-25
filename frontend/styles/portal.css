@@ -73,6 +73,7 @@
 
 .appointments-button-active:hover {
     cursor: pointer;
+    background: rgb(64, 141, 255);
 }
 
 .no-appointments {
@@ -87,6 +88,41 @@
     border-radius: 15px;
     display: flex;
     margin: 0 5rem;
-    margin-top: 2rem;
+    margin-top: 7rem;
+    gap: 7rem;
+    justify-content: center;
 }
 
+.appointment-scheduler h1 {
+    margin-bottom: 1.3rem;
+}
+
+.react-datepicker__input-container input {
+    border: 2px solid black;
+    background-color: white;
+    padding: 1rem;
+    font-size: 1.3rem;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.time-list {
+    font-size: 0.5rem;
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-list button {
+    border: 1px solid black;
+    font-size: 1rem;
+    padding: 0.5rem;
+    background-color: white;
+    font-size: 1.2rem;
+}
+
+.time-list button:hover {
+    cursor: pointer;
+    background-color: rgb(233, 233, 233);
+}

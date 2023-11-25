@@ -1,10 +1,20 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+
+
 import ItemsList from "../components/item-list"
 import client from "../client"
 
 import "../../styles/portal.css"
 import PopupSelector from "../components/popup-selector"
+import Popup from "reactjs-popup"
+
+type timeSlots = {
+    start: string,
+    end: string
+}[]
 
 type appointment = {
     date: string,
@@ -57,7 +67,13 @@ function AppointmentsList(props: {appointments: Array<appointment>}) {
 }
 function AppointmentScheduler() {
     const [hospitals, setHospitals] = useState<hospitalData>()
+    const [times, setTimes] = useState<timeSlots>()
+
     const [hospitalChoice, setHospitalChoice] = useState<number>()
+    const [doctorChoice, setDoctorChoice] = useState<number>()
+    const [date, setDate] = useState<Date>()
+    const [selectedTime, setSelectedTime] = useState<number>(0)
+
     const [loading, setLoading] = useState<boolean>(true)
 
     const formatTime = (time: string): string => {
@@ -70,8 +86,9 @@ function AppointmentScheduler() {
         if (Number(hours) > 12) {
             hours = String(Number(hours) - 12)
             suffix = "PM"
+        } else if (Number(hours) == 12) {
+            suffix = "PM"
         }
-
         return `${hours}:${minutes} ${suffix}`
     }
 
@@ -82,6 +99,15 @@ function AppointmentScheduler() {
         })
     }, [])
     
+    const updateDate = (date: Date) => {
+        setDate(date)
+        const formatted_date = date.toISOString().split("T")[0]
+        client.get(`/appointment/times/${formatted_date}/${doctorChoice}`, { withCredentials: true})
+            .then(response => {
+                setTimes(response.data)
+            })
+    }
+
     const hospitalItems = hospitals?.map((hos, _) => (
         {
             "name": hos.name,
@@ -94,14 +120,52 @@ function AppointmentScheduler() {
         }
     ))
 
+    const doctorItems = hospitals?.find(h => h.id === hospitalChoice)?.doctors.map((doctor, _) => (
+        {
+            "name": doctor.name,
+            "id": doctor.id,
+            "features": {
+                "Specialization": doctor.specialization
+            }
+        }
+    ))
+
     if (loading) return null
     return (
         <div className="appointment-scheduler">
             <PopupSelector
-            title="Select a hospital"
+            title="Hospital"
             selected={hospitalChoice}
             items={hospitalItems}
             setSelected={setHospitalChoice}/>
+            <PopupSelector
+            title="Doctor"
+            selected={doctorChoice}
+            items={doctorItems}
+            setSelected={setDoctorChoice}/>
+            <div className="date-selector">
+                <h1>Date</h1>
+                <DatePicker
+                selected={date}
+                onChange={(date: Date) => updateDate(date)}
+                minDate={new Date()}/>
+            </div>
+            <div className="time-picker">
+                <h1>Time</h1>
+                <Popup
+                trigger={
+                <button className="selector-button">
+                    {times === undefined ? "" : `${formatTime(times[selectedTime].start)} - ${formatTime(times[selectedTime].end)}`}
+                </button>}
+                position={"right center"}
+                >
+                    <div className="time-list">
+                        {times?.map((value, idx) => (
+                            <button onClick={_ => setSelectedTime(idx)}>{formatTime(value.start)} - {formatTime(value.end)}</button>
+                        ))}
+                    </div>
+                </Popup>
+            </div>
         </div>
     )
 }

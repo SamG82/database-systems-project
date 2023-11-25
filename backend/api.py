@@ -157,11 +157,11 @@ def patient_portal(user_context):
     }
 
 # gets valid appointments time for a specific date and doctor
-@api_bp.route('/appointment/times', methods=['GET'])
+@api_bp.route('/appointment/times/<date>/<doctor_id>', methods=['GET'])
 @protected_route(['patient'])
-def get_valid_times(user_context):
-    date = datetime.strptime(request.json['date'], '%Y-%m-%d').date()
-    doctor = models.Doctor.query.get(request.json['doctor_id'])
+def get_valid_times(user_context, date, doctor_id):
+    date = datetime.strptime(date, '%Y-%m-%d').date()
+    doctor = models.Doctor.query.get(doctor_id)
 
     hospital = models.Hospital.query.get(doctor.hospital_id)
     appts_on_date = models.Appointment.query.filter_by(date=date).all()
@@ -179,8 +179,8 @@ def get_valid_times(user_context):
     for seg in segments:
         if seg[0].time() not in taken_times:
             valid_time = {
-                "start": str(seg[0]),
-                "end": str(seg[1])
+                "start": str(seg[0].time()),
+                "end": str(seg[1].time())
             }
             valid_times.append(valid_time)
 

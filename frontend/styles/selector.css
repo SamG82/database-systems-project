@@ -4,10 +4,6 @@
     flex-direction: column;
 }
 
-.selector-title {
-    margin: 2rem 0;
-}
-
 .selector-list {
     display: flex;
     gap: 2rem;
