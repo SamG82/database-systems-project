@@ -4,6 +4,7 @@ import ItemsList from "../components/item-list"
 import client from "../client"
 
 import "../../styles/portal.css"
+import PopupSelector from "../components/popup-selector"
 
 type appointment = {
     date: string,
@@ -57,24 +58,50 @@ function AppointmentsList(props: {appointments: Array<appointment>}) {
 function AppointmentScheduler() {
     const [hospitals, setHospitals] = useState<hospitalData>()
     const [hospitalChoice, setHospitalChoice] = useState<number>()
+    const [loading, setLoading] = useState<boolean>(true)
+
+    const formatTime = (time: string): string => {
+        const split_str = time.split(":")
+        let hours = split_str[0]
+        let minutes = split_str[1]
+        let suffix = "AM"
+
+        hours = hours.replace("0", "")
+        if (Number(hours) > 12) {
+            hours = String(Number(hours) - 12)
+            suffix = "PM"
+        }
+
+        return `${hours}:${minutes} ${suffix}`
+    }
+
     useEffect(() => {
         client.get('/hospitals', {withCredentials: true}).then(response => {
             setHospitals(response.data)
+            setLoading(false)
         })
     }, [])
+    
+    const hospitalItems = hospitals?.map((hos, _) => (
+        {
+            "name": hos.name,
+            "id": hos.id,
+            "features": {
+                "Address": hos.address,
+                "Hours": `${formatTime(hos.open_time)} - ${formatTime(hos.close_time)}`,
+                "Phone": hos.phone
+            }
+        }
+    ))
+
+    if (loading) return null
     return (
         <div className="appointment-scheduler">
-            <div className="hospital-selector">
-                <h1 className="hospital-selector-title">Select a hospital</h1>
-                <div className="hospital-list">
-                {hospitals?.map((hospital, i) => 
-                    <button key={i} className="hospital-listing">
-                        <h1>{hospital.name}</h1>
-                    </button>
-                )}
-                </div>
-                
-            </div>
+            <PopupSelector
+            title="Select a hospital"
+            selected={hospitalChoice}
+            items={hospitalItems}
+            setSelected={setHospitalChoice}/>
         </div>
     )
 }

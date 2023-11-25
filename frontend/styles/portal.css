@@ -10,6 +10,8 @@
     width: 80%;
     margin: 6rem auto;
     border-radius: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .portal-header {
@@ -83,31 +85,8 @@
 .appointment-scheduler {
     background-color: white;
     border-radius: 15px;
-}
-
-.hospital-selector {
     display: flex;
-    align-items: center;
-    flex-direction: column;
+    margin: 0 5rem;
+    margin-top: 2rem;
 }
 
-.hospital-selector-title {
-    margin: 2rem 0;
-}
-.hospital-list {
-    display: flex;
-    gap: 2rem;
-}
-
-.hospital-listing {
-    padding: 1rem;
-    border: 1px solid black;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    background-color: white;
-}
-
-.hospital-listing:hover {
-    cursor: pointer;
-    background-color: rgb(236, 236, 236);
-}
