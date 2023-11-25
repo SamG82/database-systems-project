@@ -73,6 +73,15 @@ function AppointmentScheduler() {
     const [doctorChoice, setDoctorChoice] = useState<number>()
     const [date, setDate] = useState<Date>()
     const [selectedTime, setSelectedTime] = useState<number>(0)
+    const [concerns, setConcerns] = useState<string>("")
+
+    const updateConcerns = (text: string) => {
+        if (text.length > 150) {
+            return
+        }
+
+        setConcerns(text)
+    }
 
     const [loading, setLoading] = useState<boolean>(true)
 
@@ -90,6 +99,11 @@ function AppointmentScheduler() {
             suffix = "PM"
         }
         return `${hours}:${minutes} ${suffix}`
+    }
+
+    const isWeekday = (date: Date): boolean => {
+        const day = date.getDay()
+        return day !== 0 && day !== 6
     }
 
     useEffect(() => {
@@ -133,38 +147,47 @@ function AppointmentScheduler() {
     if (loading) return null
     return (
         <div className="appointment-scheduler">
-            <PopupSelector
-            title="Hospital"
-            selected={hospitalChoice}
-            items={hospitalItems}
-            setSelected={setHospitalChoice}/>
-            <PopupSelector
-            title="Doctor"
-            selected={doctorChoice}
-            items={doctorItems}
-            setSelected={setDoctorChoice}/>
-            <div className="date-selector">
-                <h1>Date</h1>
-                <DatePicker
-                selected={date}
-                onChange={(date: Date) => updateDate(date)}
-                minDate={new Date()}/>
+            <div className="appointment-options">
+                <PopupSelector
+                title="Hospital"
+                selected={hospitalChoice}
+                items={hospitalItems}
+                setSelected={setHospitalChoice}/>
+                <PopupSelector
+                title="Doctor"
+                selected={doctorChoice}
+                items={doctorItems}
+                setSelected={setDoctorChoice}/>
+                <div className="date-selector">
+                    <h1>Date</h1>
+                    <DatePicker
+                    selected={date}
+                    onChange={(date: Date) => updateDate(date)}
+                    minDate={new Date()}
+                    filterDate={isWeekday}
+                    />
+                </div>
+                <div className="time-picker">
+                    <h1>Time</h1>
+                    <Popup
+                    trigger={
+                    <button className="selector-button">
+                        {times === undefined ? "" : `${formatTime(times[selectedTime].start)} - ${formatTime(times[selectedTime].end)}`}
+                    </button>}
+                    position={"right center"}
+                    >
+                        <div className="time-list">
+                            {times?.map((value, idx) => (
+                                <button onClick={_ => setSelectedTime(idx)}>{formatTime(value.start)} - {formatTime(value.end)}</button>
+                            ))}
+                        </div>
+                    </Popup>
+                </div>
             </div>
-            <div className="time-picker">
-                <h1>Time</h1>
-                <Popup
-                trigger={
-                <button className="selector-button">
-                    {times === undefined ? "" : `${formatTime(times[selectedTime].start)} - ${formatTime(times[selectedTime].end)}`}
-                </button>}
-                position={"right center"}
-                >
-                    <div className="time-list">
-                        {times?.map((value, idx) => (
-                            <button onClick={_ => setSelectedTime(idx)}>{formatTime(value.start)} - {formatTime(value.end)}</button>
-                        ))}
-                    </div>
-                </Popup>
+            <div className="concerns-input">
+                <h1>Concerns</h1>
+                <span>{150 - concerns.length}</span>
+                <textarea rows={5} cols={40} value={concerns} onChange={e => updateConcerns(e.target.value)}/>
             </div>
         </div>
     )
