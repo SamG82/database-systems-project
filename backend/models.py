@@ -94,6 +94,7 @@ admins_schema = AdminSchema(many=True)
 class AppointmentSchema(ma.Schema):
     class Meta:
         fields = (
+            'id',
             'doctor_id',
             'patient_id',
             'start_time',

@@ -69,19 +69,70 @@ const formatTime = (time: string): string => {
     return `${hours}:${minutes} ${suffix}`
 }
 
+function ReviewForm(props: {id: number}) {
+    const navigate = useNavigate()
+
+    const [satisfaction, setSatisfaction] = useState<number>(3)
+    const [review, setReview] = useState<string>("")
+
+    const changeText = (text: string) => {
+        if (text.length > 150) {
+            return
+        }
+
+        setReview(text)
+    }
+
+    const submitReview = () => {
+        client.patch(`/appointment/${props.id}`, {
+            satisfaction,
+            review
+        }).then(_ => navigate(0))
+    }
+    
+    return (
+        <div className="review-form">
+            <h1>Submit a review</h1>
+            <div>
+                <h2>Rate your overall satisfaction</h2>
+                <div className="satisfaction-buttons">
+                {[1, 2, 3, 4, 5].map((value, _) => (
+                    <div className="sat-button-container">
+                        <span>{value}</span>
+                        <input onClick={_ => setSatisfaction(value)} checked={value === satisfaction} type="radio"/>
+                    </div>
+                ))}
+                </div>
+            </div>
+            <div className="text-review">
+                <h2>Text review</h2>
+                <span>{150 - review.length}</span>
+                <textarea rows={6} cols={40} onChange={e => changeText(e.target.value)} value={review}/>
+            </div>
+           <button onClick={_ => submitReview()} className="appointments-button-active submit">Submit</button>
+        </div>
+    )
+}
+
 function AppointmentsList(props: {appointments: Array<appointment>}) {
     const appointmentData = props.appointments.map(value => ([
         value.hospital_name,
         value.doctor_name,
         value.date,
-        `${formatTime(value.start_time)} - ${formatTime(value.end_time)}`
+        `${formatTime(value.start_time)} - ${formatTime(value.end_time)}`,
+        value.patient_satisfaction === null ?  
+        <Popup
+        trigger={<button className="review-button">Review</button>}
+        position={"left center"}><ReviewForm id={value.id}/></Popup>
+        :
+        <button className="reviewed-button">Reviewed</button>
     ]))
 
     return (
         <div className="appointment-list">
             {props.appointments.length > 0 ? 
             <ItemsList
-            features={["Hospital", "Doctor", "Date", "Time"]}
+            features={["Hospital", "Doctor", "Date", "Time", ""]}
             dataItems={appointmentData}/> : <h1 className="no-appointments">Appointments you make will appear here</h1>}
         </div>
     )

@@ -156,6 +156,25 @@ def patient_portal(user_context):
         "appointments": appts
     }
 
+# submits a review for a given appointment by a patient
+@api_bp.route('/appointment/<id>', methods=['PATCH'])
+@protected_route(['patient'])
+def add_appointment_review(user_context, id):
+    appt = models.Appointment.query.get_or_404(id)
+    if appt.patient_id != user_context['id']:
+        return {}, 401
+
+    satisfaction = request.json['satisfaction']
+    text_review = request.json['review']
+
+    appt.patient_satisfaction = satisfaction
+    appt.patient_review = text_review
+
+    models.db.session.add(appt)
+    models.db.session.commit()
+
+    return {}, 200
+
 # gets valid appointments time for a specific date and doctor
 @api_bp.route('/appointment/times/<date>/<doctor_id>', methods=['GET'])
 @protected_route(['patient'])

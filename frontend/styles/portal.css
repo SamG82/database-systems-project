@@ -154,3 +154,79 @@
     cursor: pointer;
     background-color: rgb(7, 63, 247);
 }
+
+.review-button {
+    border: none;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: #04AA6D;
+    color: white;
+    font-size: 1.5rem;
+    padding: 1.3rem 2rem;
+}
+
+.reviewed-button {
+    border: none;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: rgb(201, 201, 201);
+    font-size: 1.5rem;
+    padding: 1.3rem 2rem;
+}
+
+.review-button, .reviewed-button {
+    width: 100%;
+}
+
+.review-button:hover {
+    cursor: pointer;
+    background-color: #028d5a;
+}
+
+.review-form {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.review-form div {
+    width: 100%;
+}
+
+.review-form h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.satisfaction-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sat-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.satisfaction-buttons input {
+    width: 45px;
+    height: 30px;
+}
+
+.text-review {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-review textarea {
+    padding: 0.6rem;
+    font-size: 1.2rem;
+}
+
