@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import TimePicker from "react-time-picker"
 import client from "../client"
@@ -56,9 +56,6 @@ export function Form(props: Props) {
         setFormFields(copy)
     }
 
-    useEffect(() => {
-        console.log(formFields)
-    }, [formFields])
     return (
         <div className="form-container column-flex main-theme">
             <h1 className="form-title">{props.title}</h1>

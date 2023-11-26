@@ -17,6 +17,7 @@ type timeSlots = {
 }[]
 
 type appointment = {
+    id: number,
     date: string,
     doctor_id: number,
     doctor_name: string,
@@ -49,11 +50,31 @@ type hospitalData = {
     phone: number
 }[]
 
+const formatTime = (time: string): string => {
+    const split_str = time.split(":")
+    let hours = split_str[0]
+    let minutes = split_str[1]
+    let suffix = "AM"
+
+    if (Number(hours) < 10) {
+        hours = hours.replace('0', '')
+    }
+
+    if (Number(hours) > 12) {
+        hours = String(Number(hours) - 12)
+        suffix = "PM"
+    } else if (Number(hours) == 12) {
+        suffix = "PM"
+    }
+    return `${hours}:${minutes} ${suffix}`
+}
+
 function AppointmentsList(props: {appointments: Array<appointment>}) {
     const appointmentData = props.appointments.map(value => ([
+        value.hospital_name,
         value.doctor_name,
         value.date,
-        `${value.start_time} - ${value.end_time}`
+        `${formatTime(value.start_time)} - ${formatTime(value.end_time)}`
     ]))
 
     return (
@@ -66,6 +87,8 @@ function AppointmentsList(props: {appointments: Array<appointment>}) {
     )
 }
 function AppointmentScheduler() {
+    const navigate = useNavigate()
+
     const [hospitals, setHospitals] = useState<hospitalData>()
     const [times, setTimes] = useState<timeSlots>()
 
@@ -84,22 +107,6 @@ function AppointmentScheduler() {
     }
 
     const [loading, setLoading] = useState<boolean>(true)
-
-    const formatTime = (time: string): string => {
-        const split_str = time.split(":")
-        let hours = split_str[0]
-        let minutes = split_str[1]
-        let suffix = "AM"
-
-        hours = hours.replace("0", "")
-        if (Number(hours) > 12) {
-            hours = String(Number(hours) - 12)
-            suffix = "PM"
-        } else if (Number(hours) == 12) {
-            suffix = "PM"
-        }
-        return `${hours}:${minutes} ${suffix}`
-    }
 
     const isWeekday = (date: Date): boolean => {
         const day = date.getDay()
@@ -120,6 +127,21 @@ function AppointmentScheduler() {
             .then(response => {
                 setTimes(response.data)
             })
+    }
+
+    const submitAppointment = () => {
+        if (times === undefined) {
+            return
+        }
+
+        console.log(times[selectedTime])
+        client.post('/appointment', {
+            doctor_id: doctorChoice,
+            start_time: times[selectedTime].start.slice(0, -3),
+            end_time: times[selectedTime].end.slice(0, -3),
+            date: date?.toISOString().split("T")[0],
+            patient_concerns: concerns
+        }).then(_ => navigate(0))
     }
 
     const hospitalItems = hospitals?.map((hos, _) => (
@@ -189,6 +211,7 @@ function AppointmentScheduler() {
                 <span>{150 - concerns.length}</span>
                 <textarea rows={5} cols={40} value={concerns} onChange={e => updateConcerns(e.target.value)}/>
             </div>
+            <button onClick={_ => submitAppointment()} className="appointments-button-active submit">Submit</button>
         </div>
     )
 }

@@ -85,7 +85,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4rem;
+    gap: 2rem;
 }
 
 .appointment-options {
@@ -143,4 +143,14 @@
     padding: 1rem;
     font-size: 1.3rem;
     border-radius: 15px;
+}
+
+.submit {
+    font-size: 2rem;
+    padding: 1rem 3rem;
+}
+
+.submit:hover {
+    cursor: pointer;
+    background-color: rgb(7, 63, 247);
 }
