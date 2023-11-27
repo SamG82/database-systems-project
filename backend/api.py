@@ -2,7 +2,8 @@ from flask import request, Blueprint
 from auth import protected_route
 import models
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
+from sentiment import analyze_sentiment
 
 api_bp = Blueprint('api', 'api')
 
@@ -89,7 +90,8 @@ def all_hospitals(user_context):
     hospitals_json = models.hospitals_schema.dump(hospitals)
     
     for i, hospital in enumerate(hospitals):
-        hospitals_json[i]['doctors'] = models.doctors_schema.dump(hospital.doctors)
+        docs = [doc for doc in hospital.doctors if doc.available]
+        hospitals_json[i]['doctors'] = models.doctors_schema.dump(docs)
 
     return hospitals_json
 
@@ -103,9 +105,44 @@ def get_dashboard(user_context):
     if admin.hospital:
         doctors = admin.hospital.doctors
 
+    doctor_ids = [doctor.id for doctor in doctors]
+
+    appts = models.Appointment.query.all()
+    appts = [a for a in appts if a.doctor_id in doctor_ids]
+    appts_json = models.appointments_schema.dump(appts)
+
+    overall_score = {
+        'pos': 0,
+        'neu': 0,
+        'neg': 0
+    }
+    count = 0
+
+    for i, appt in enumerate(appts_json):
+        doctor = models.Doctor.query.get(appts[i].doctor_id)
+        patient = models.Patient.query.get(appts[i].patient_id)
+
+        if appts[i].patient_satisfaction:
+            sentiment = analyze_sentiment(appts[i].patient_review)
+            print(sentiment)
+            appt['sentiment'] = sentiment
+            overall_score['pos'] += sentiment['pos']
+            overall_score['neu'] += sentiment['neu']
+            overall_score['neg'] += sentiment['neg']
+            count += 1
+
+        appt['doctor_name'] = doctor.name
+        appt['patient_name'] = patient.name
+    
+    if count > 0:
+        for key in overall_score:
+            overall_score[key] /= count
+
     return {
         'hospital': models.hospital_schema.dump(admin.hospital),
-        'doctors': models.doctors_schema.dump(doctors)
+        'doctors': models.doctors_schema.dump(doctors),
+        'appointments': appts_json,
+        'overall_score': overall_score
     }
 
 # creates an appointment for a patient

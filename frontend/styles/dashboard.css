@@ -160,3 +160,57 @@
     text-align: center;
     width: 100%;
 }
+
+.appt-details {
+    font-size: 1.4rem;
+}
+
+.appointment-card {
+    color: black;
+    background-color: white;
+    border-radius: 15px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 400px;
+    font-size: 1.3rem;
+}
+
+.overall-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.sentiment-chart {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.sentiment-chart svg {
+    width: 60px;
+    height: 60px;
+}
+
+.legend {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pos {
+    color:#04421c; 
+}
+
+.neu {
+    color: grey;
+}
+
+.neg {
+    color: rgb(182, 10, 10);
+}

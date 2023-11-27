@@ -3,9 +3,9 @@ import { useState, useEffect } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 
-
 import ItemsList from "../components/item-list"
 import client from "../client"
+import { formatTime } from "../utils"
 
 import "../../styles/portal.css"
 import PopupSelector from "../components/popup-selector"
@@ -27,7 +27,12 @@ type appointment = {
     patient_concerns: string,
     patient_id: number,
     patient_review: string | null,
-    patient_satisfaction: string | null
+    patient_satisfaction: string | null,
+    sentiment: {
+        neg: number,
+        neu: number,
+        pos:  number
+    } | undefined
 }
 
 type portalData = {
@@ -49,25 +54,6 @@ type hospitalData = {
     open_time: string,
     phone: number
 }[]
-
-const formatTime = (time: string): string => {
-    const split_str = time.split(":")
-    let hours = split_str[0]
-    let minutes = split_str[1]
-    let suffix = "AM"
-
-    if (Number(hours) < 10) {
-        hours = hours.replace('0', '')
-    }
-
-    if (Number(hours) > 12) {
-        hours = String(Number(hours) - 12)
-        suffix = "PM"
-    } else if (Number(hours) == 12) {
-        suffix = "PM"
-    }
-    return `${hours}:${minutes} ${suffix}`
-}
 
 function ReviewForm(props: {id: number}) {
     const navigate = useNavigate()

@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom"
 import client from "../client"
 import { makeField, Form } from "../components/form"
 import ItemsList from "../components/item-list"
+import { formatTime } from "../utils"
 import "../../styles/dashboard.css"
 import Popup from "reactjs-popup"
+import { PieChart } from "react-minimal-pie-chart"
 
 type dashboardButtonProps = {
     id: number,
@@ -84,6 +86,22 @@ function DoctorList(props: {doctors: Array<doctor>}) {
     )
 }
 
+type appointment = {
+    id: number,
+    date: string,
+    doctor_id: number,
+    doctor_name: string,
+    patient_name: string,
+    hospital_name: string,
+    end_time: string,
+    start_time: string,
+    patient_concerns: string,
+    patient_id: number,
+    patient_review: string | null,
+    patient_satisfaction: string | null,
+    sentiment: sentiment
+}
+
 type dashboardData = {
     hospital: {
         address: string,
@@ -93,7 +111,94 @@ type dashboardData = {
         open_time: string,
         phone: number
     },
-    doctors: Array<doctor>
+    doctors: Array<doctor>,
+    appointments: Array<appointment>,
+    overall_score: sentiment
+}
+
+function AppointmentCard({appt}: {appt: appointment}) {
+    return (
+        <div className="appointment-card">
+            <div>
+                <h2>Review Sentiment</h2>
+                <SentimentChart sentiment={appt.sentiment}/>
+            </div>
+            <div>
+                <h2>Patient concerns</h2>
+                <p>{appt.patient_concerns}</p>
+            </div>
+            <div>
+                <h2>Patient satisfaction - {appt.patient_satisfaction}/5</h2>
+            </div>
+            <div>
+                <h2>Review</h2>
+                <p>{appt.patient_review}</p>
+            </div>
+            <div>
+                <h2>Time</h2>
+                <p>{`${formatTime(appt.start_time)} - ${formatTime(appt.end_time)}`}</p>
+            </div>
+        </div>
+    )
+}
+
+type sentiment = {
+    pos: number,
+    neu: number,
+    neg: number
+}
+
+function SentimentChart({sentiment}: {sentiment: sentiment}) {
+    console.log(sentiment)
+    const data = [
+        {title: 'Positive', value: sentiment.pos, color: '#04AA6D'},
+        {title: 'Negative', value: sentiment.neg, color: '#c92a35'},
+        {title: 'Neutral', value: sentiment.neu, color: '#bfbfbf'}
+    ]
+
+    const formatScore = (score: number): string => {
+        return `${(Math.round(score * 100)).toFixed(2)}%`
+    }
+    return (
+        <div className="sentiment-chart">
+            <PieChart
+            animate={true}
+            data={data}/>
+            <div className="legend">
+                <span className="pos">Positive - {formatScore(sentiment.pos)}</span>
+                <span className="neu">Neutral - {formatScore(sentiment.neu)}</span>
+                <span className="neg">Negative - {formatScore(sentiment.neg)}</span>
+            </div>
+        </div>
+    )
+}
+
+function AppointmentList(props: {appointments: Array<appointment>, overallScore: sentiment}) {
+    const apptData = props.appointments.map((appt, _) => (
+        [
+            appt.doctor_name,
+            appt.patient_name,
+            appt.date,
+            <Popup trigger={<button className="add-doctors-button appt-details">View Details</button>} position={"left center"}>
+                <AppointmentCard appt={appt}/>
+            </Popup>
+        ]
+    ))
+    return (
+        <div className="appointment-list">
+            {props.appointments.length === 0 ?
+            <h1>No appointments have been made yet</h1>
+            :
+            <>
+            <div className="overall-score">
+                <h1>Average Review Score </h1>
+                <SentimentChart sentiment={props.overallScore}/>
+            </div>
+            <ItemsList dataItems={apptData} features={["Doctor", "Patient", "Date", ""]}/>
+            </>
+            }
+        </div>
+    )
 }
 
 function MainDashboard({data}: {data: dashboardData}) {
@@ -101,7 +206,8 @@ function MainDashboard({data}: {data: dashboardData}) {
     const buttonNames = ["Manage doctors", "Appointments"]
 
     const mainContents = [
-        <DoctorList doctors={data.doctors}/>
+        <DoctorList doctors={data.doctors}/>,
+        <AppointmentList overallScore={data.overall_score} appointments={data.appointments}/>
     ]
     return (
         <div className="main-dashboard">
