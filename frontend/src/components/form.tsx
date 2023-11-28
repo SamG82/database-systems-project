@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import TimePicker from "react-time-picker"
+import PhoneInput from "react-phone-input-2"
 import client from "../client"
 
+import "react-phone-input-2/lib/style.css"
 import "react-time-picker/dist/TimePicker.css"
 
 import "../../styles/form.css"
@@ -70,6 +72,16 @@ export function Form(props: Props) {
                             disableClock={true}
                             value={formFields[field.httpValue]}
                             onChange={v => updateFormField(field.httpValue, v)}/>
+                        </div>
+                    )
+                } else if (field.type === "phone") {
+                    return (
+                        <div className="form-field" key={i}>
+                            <h2 className="form-field-name">{field.displayName}</h2>
+                            <PhoneInput
+                            onlyCountries={['us']}
+                            value={formFields[field.httpValue]}
+                            onChange={v => updateFormField(field.httpValue, String(v))}/>
                         </div>
                     )
                 }

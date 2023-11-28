@@ -9,7 +9,7 @@ import PatientPortal from "./pages/patient-portal.tsx"
 const patientRegisterFields = [
   makeField('Name', 'text', 'name'),
   makeField('Address', 'text', 'address'),
-  makeField('Phone', 'text', 'phone'),
+  makeField('Phone', 'phone', 'phone'),
   ...commonFields.login
 ]
 const adminFields = patientRegisterFields.filter((field) => field.displayName != "Phone")

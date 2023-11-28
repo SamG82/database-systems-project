@@ -229,7 +229,7 @@ function MainDashboard({data}: {data: dashboardData}) {
 const hospitalRegisterFields = [
     makeField('Hospital Name', 'text', 'name'),
     makeField('Address', 'text', 'address'),
-    makeField('Phone Contact', 'text', 'phone'),
+    makeField('Phone Contact', 'phone', 'phone'),
     makeField('Opening time', 'time', 'open_time'),
     makeField('Closing time', 'time', 'close_time')
 ]
