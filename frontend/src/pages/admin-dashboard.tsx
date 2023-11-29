@@ -192,7 +192,7 @@ function AppointmentList(props: {appointments: Array<appointment>, overallScore:
             :
             <>
             <div className="overall-score">
-                <h1>Average Review Score </h1>
+                <h1>Overall Average Review Score </h1>
                 <SentimentChart sentiment={props.overallScore}/>
             </div>
             <ItemsList dataItems={apptData} features={["Doctor", "Patient", "Date", ""]}/>
