@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import ItemsList from "../components/item-list"
 import client from "../client"
 import { formatTime } from "../utils"
+import Header from "../components/header"
 
 import "../../styles/portal.css"
 import PopupSelector from "../components/popup-selector"
@@ -277,11 +278,9 @@ function PatientPortal() {
     if (loading) return null
     return (
         <div className="patient-portal">
-            <div className="portal-header">
-                <h1>Patient Portal</h1>
+            <Header title="Patient Portal">
                 <h3>Welcome back, <span className="patient-name">{portal?.name}</span></h3>
-                <span className="spacer"></span>
-            </div>
+            </Header>
             <div className="appointment-manager">
                 <div className="appointment-header">
                     <h1>Appointment Manager</h1>

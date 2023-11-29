@@ -7,6 +7,7 @@ import { formatTime } from "../utils"
 import "../../styles/dashboard.css"
 import Popup from "reactjs-popup"
 import { PieChart } from "react-minimal-pie-chart"
+import Header from "../components/header"
 
 type dashboardButtonProps = {
     id: number,
@@ -187,7 +188,7 @@ function AppointmentList(props: {appointments: Array<appointment>, overallScore:
     return (
         <div className="appointment-list">
             {props.appointments.length === 0 ?
-            <h1>No appointments have been made yet</h1>
+            <h1 className="no-appointments">No appointments have been made yet</h1>
             :
             <>
             <div className="overall-score">
@@ -253,7 +254,7 @@ function AdminDashboard() {
     if (loading) return null
     return (
         <div className="admin-dashboard">
-            <h1 className="header-title">Admin Dashboard</h1>
+            <Header title="Admin Dashboard"></Header>
             <div className="dashboard-container">
             {dashboard && dashboard.hospital.name ?
             <MainDashboard data={dashboard}/> : 

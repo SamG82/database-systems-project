@@ -14,16 +14,6 @@
     flex-direction: column;
 }
 
-.portal-header {
-    background-color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 1rem;
-    font-size: 1.2rem;
-}
-
 .portal-header * {
     flex: 1;
 }

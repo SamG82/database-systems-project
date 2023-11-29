@@ -124,7 +124,6 @@ def get_dashboard(user_context):
 
         if appts[i].patient_satisfaction:
             sentiment = analyze_sentiment(appts[i].patient_review)
-            print(sentiment)
             appt['sentiment'] = sentiment
             overall_score['pos'] += sentiment['pos']
             overall_score['neu'] += sentiment['neu']
