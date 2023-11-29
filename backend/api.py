@@ -2,6 +2,7 @@ from flask import request, Blueprint
 from auth import protected_route
 import models
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import func
 from datetime import datetime, timedelta
 from sentiment import analyze_sentiment
 
@@ -92,6 +93,11 @@ def all_hospitals(user_context):
     for i, hospital in enumerate(hospitals):
         docs = [doc for doc in hospital.doctors if doc.available]
         hospitals_json[i]['doctors'] = models.doctors_schema.dump(docs)
+
+        for j, doctor in enumerate(docs):
+            avg_rating = models.Appointment.query.with_entities(func.avg(models.Appointment.patient_satisfaction)).join(models.Doctor, models.Appointment.doctor_id == doctor.id)
+            rating = 0 if avg_rating.first()[0] == None else avg_rating.first()[0]
+            hospitals_json[i]['doctors'][j]['average_rating'] = rating
 
     return hospitals_json
 

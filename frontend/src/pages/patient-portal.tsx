@@ -49,6 +49,7 @@ type hospitalData = {
         id: number,
         name: string,
         specialization: string,
+        average_rating: number
     }[],
     id: number,
     name: string,
@@ -199,7 +200,8 @@ function AppointmentScheduler() {
             "name": doctor.name,
             "id": doctor.id,
             "features": {
-                "Specialization": doctor.specialization
+                "Specialization": doctor.specialization,
+                "Rating": `${doctor.average_rating} / 5`
             }
         }
     ))
