@@ -4,11 +4,6 @@
     flex-direction: column;
 }
 
-.selector-list {
-    display: flex;
-    gap: 2rem;
-}
-
 .selector-item {
     padding: 1rem;
     border: 1px solid black;
@@ -43,8 +38,8 @@
     background-color: white;
     padding: 2rem;
     border-radius: 15px;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1.3rem;
 }
 

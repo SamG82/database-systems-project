@@ -155,7 +155,6 @@ def get_dashboard(user_context):
 @protected_route(['patient'])
 def create_appointment(user_context):
     doctor_id = request.json.get('doctor_id', '')
-    doctor = models.Doctor.query.get_or_404(doctor_id)
 
     start_input = request.json.get('start_time', '')
     end_input = request.json.get('end_time', '')
@@ -169,14 +168,10 @@ def create_appointment(user_context):
         start_time=start.time(),
         end_time=end.time(),
         date=datetime.strptime(date, '%Y-%m-%d').date(),
-        patient_concerns=patient_concerns
+        patient_concerns=patient_concerns,
+        doctor_id=doctor_id,
+        patient_id=user_context['id']
     )
-    
-    patient = models.Patient.query.get_or_404(user_context['id'])
-
-    patient.appointments.append(appt)
-    doctor.appointments.append(appt)
-
     models.db.session.add(appt)
     models.db.session.commit()
     return {}, 200

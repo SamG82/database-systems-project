@@ -40,7 +40,7 @@ class Doctor(db.Model):
     specialization = db.Column(db.String(30), nullable=False)
     available = db.Column(db.Boolean(), default=True)
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
-    appointments = db.relationship('Appointment', uselist=True, backref='Doctor')
+    appointments = db.relationship('Appointment', uselist=True, backref='Doctor', cascade='all, delete-orphan')
 
 doctor_schema = DoctorSchema()
 doctors_schema = DoctorSchema(many=True)
