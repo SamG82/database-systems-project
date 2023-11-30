@@ -165,6 +165,15 @@
     font-size: 1.4rem;
 }
 
+.unreviewed {
+    padding: 0.9rem 1.7rem;
+    font-size: 1.4rem;
+    border: none;
+    color: black;
+    background: rgb(216, 216, 216);
+    border-radius: 5px;
+}
+
 .appointment-card {
     color: black;
     background-color: white;

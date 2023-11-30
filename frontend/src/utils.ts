@@ -1,4 +1,5 @@
-export const formatTime = (time: string): string => {
+export const formatTime = (time: string | undefined): string => {
+    if (time === undefined) { return "" }
     const split_str = time.split(":")
     let hours = split_str[0]
     let minutes = split_str[1]

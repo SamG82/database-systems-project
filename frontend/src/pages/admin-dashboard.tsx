@@ -100,7 +100,7 @@ type appointment = {
     patient_id: number,
     patient_review: string | null,
     patient_satisfaction: string | null,
-    sentiment: sentiment
+    sentiment: sentiment | undefined
 }
 
 type dashboardData = {
@@ -149,26 +149,29 @@ type sentiment = {
     neg: number
 }
 
-function SentimentChart({sentiment}: {sentiment: sentiment}) {
-    console.log(sentiment)
+function SentimentChart({sentiment}: {sentiment: sentiment | undefined}) {
+    if (sentiment === undefined) return null
     const data = [
-        {title: 'Positive', value: sentiment.pos, color: '#04AA6D'},
-        {title: 'Negative', value: sentiment.neg, color: '#c92a35'},
-        {title: 'Neutral', value: sentiment.neu, color: '#bfbfbf'}
+        {title: 'Positive', value: sentiment?.pos, color: '#04AA6D'},
+        {title: 'Negative', value: sentiment?.neg, color: '#c92a35'},
+        {title: 'Neutral', value: sentiment?.neu, color: '#bfbfbf'}
     ]
 
-    const formatScore = (score: number): string => {
+    const formatScore = (score: number | undefined): string => {
+        if (score === undefined) return ""
+
         return `${(Math.round(score * 100)).toFixed(2)}%`
     }
+
     return (
         <div className="sentiment-chart">
             <PieChart
             animate={true}
             data={data}/>
             <div className="legend">
-                <span className="pos">Positive - {formatScore(sentiment.pos)}</span>
-                <span className="neu">Neutral - {formatScore(sentiment.neu)}</span>
-                <span className="neg">Negative - {formatScore(sentiment.neg)}</span>
+                <span className="pos">Positive - {formatScore(sentiment?.pos)}</span>
+                <span className="neu">Neutral - {formatScore(sentiment?.neu)}</span>
+                <span className="neg">Negative - {formatScore(sentiment?.neg)}</span>
             </div>
         </div>
     )
@@ -180,9 +183,10 @@ function AppointmentList(props: {appointments: Array<appointment>, overallScore:
             appt.doctor_name,
             appt.patient_name,
             appt.date,
+            appt.sentiment ? 
             <Popup trigger={<button className="add-doctors-button appt-details">View Details</button>} position={"left center"}>
                 <AppointmentCard appt={appt}/>
-            </Popup>
+            </Popup> : <button className="unreviewed">Unreviewed</button>
         ]
     ))
     return (
