@@ -1,24 +1,24 @@
-from flask import Flask
+from flask import Flask, g
+from sqlite3 import connect
 from flask_cors import CORS
-import models
-import os
-from auth import auth_bp
-from api import api_bp
-from fabricate import fabricate_data
+
+from api.routes import api_blueprint
+
+from db import setup_db
 
 # configuration and setup
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
-models.db.init_app(app)
 
-with app.app_context():
-    models.db.drop_all()
-    models.db.create_all()
-    fabricate_data()
+app.register_blueprint(api_blueprint)
+setup_db()
+
+@app.before_request
+def connect_db():
+    g.db = connect("./db.sqlite")
+    g.cursor = g.db.cursor()
     
-models.ma.init_app(app)
-
-app.register_blueprint(auth_bp)
-app.register_blueprint(api_bp)
+@app.teardown_request
+def close_db(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
