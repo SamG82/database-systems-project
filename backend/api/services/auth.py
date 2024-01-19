@@ -12,6 +12,14 @@ SECRET = os.getenv('SECRET')
 
 auth_bp = Blueprint('auth', 'auth')
 
+credential_error = {
+    'errors': {
+        'credentials': [
+            'Invalid email or password.'
+        ]
+    }
+}
+
 class Role(Enum):
     ADMIN = 'admin'
     PATIENT = 'patient'
@@ -70,11 +78,11 @@ def handle_login(cursor, request_json, find_credentials_sql, role: Role):
     res = cursor.execute(find_credentials_sql, (request_json['email'],))
     user = res.fetchone()
     if user == None:
-        return {'error': 'Invalid email or password.'}, 401
+        return credential_error, 401
 
     id, password = user
     if not validate_pw(request_json['password'], password):
-        return {'error': 'Invalid email or password.'}, 401
+        return credential_error, 401
     
     # apply the cookie if a user was found by email with the correct password
     resp = make_response({})

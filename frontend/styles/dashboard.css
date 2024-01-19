@@ -102,8 +102,7 @@
 }
 
 .popup-overlay {
-    background-color: black;
-    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .list-items {

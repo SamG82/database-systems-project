@@ -9,6 +9,10 @@ import Popup from "reactjs-popup"
 import { PieChart } from "react-minimal-pie-chart"
 import Header from "../components/header"
 
+import { Doctor } from "../interfaces/doctor"
+import { AdminsAppointment } from "../interfaces/appointment"
+import { AdminHospital } from "../interfaces/hospital"
+
 type dashboardButtonProps = {
     id: number,
     name: string,
@@ -25,58 +29,67 @@ function DashboardButton(props: dashboardButtonProps) {
     )
 }
 
-type doctor = {
-    name: string,
-    specialization: string,
-    available: boolean,
-    id: number
-}
-
-const doctoFields = [
-    makeField('Name', 'text', 'name'),
+const doctorFields = [
+    makeField('First name', 'text', 'first_name'),
+    makeField('Last name', 'text', 'last_name'),
     makeField('Specialization', 'text', 'specialization')
 ]
 
-function DoctorList(props: {doctors: Array<doctor>}) {
+function DoctorList() {
+    const [doctors, setDoctors] = useState<Array<Doctor>>()
+    const [loading, setLoading] = useState<boolean>(true)
+    const [showDoctorForm, setShowDoctorForm] = useState<boolean>(false)
+
+    const getDoctors = () => {
+        client.get('/doctor/', {withCredentials: true}).then(response => {
+            setDoctors(response.data)
+            setLoading(false)
+        })
+    }
+
+    useEffect(() => {
+        getDoctors()
+    }, [])
+
     const removeDoctor = (id: number) => {
-        client.delete(`/doctor/${id}`,{withCredentials: true}).then(() => navigate(0))
+        client.delete(`/doctor/delete/${id}`,{withCredentials: true}).then(_ => getDoctors())
     }
-
-    const changeAvailabiltiy = (id: number, change: boolean) => {
-        client.patch(`/doctor/${id}`, {"availability": change}, {withCredentials: true}).then(() => navigate(0))
+    const changeAvailabiltiy = (id: number) => {
+        client.patch(`/doctor/update-availability/${id}`, undefined, {withCredentials: true}).then(_ => getDoctors())
     }
-
-    const data = props.doctors.map((doctor, _) => (
+    
+    if (loading) return null
+    const data = doctors?.map((doctor, _) => (
         [
-            doctor.name,
+            `${doctor.first_name} ${doctor.last_name}`,
             doctor.specialization,
-            doctor.available ?
-            <button onClick={_ => changeAvailabiltiy(doctor.id, false)} className="doctor-button available">Available</button>
-            : <button onClick={_ => changeAvailabiltiy(doctor.id, true)} className="doctor-button unavailable">Unavailable</button>
+            doctor.availability ?
+            <button onClick={_ => changeAvailabiltiy(doctor.id)} className="doctor-button available">Available</button>
+            : <button onClick={_ => changeAvailabiltiy(doctor.id)} className="doctor-button unavailable">Unavailable</button>
             ,
             <button onClick={_ => removeDoctor(doctor.id)} className="remove-doctor doctor-button">Delete</button>
 
         ]
     ))
 
-    const navigate = useNavigate()
-
     return (
         <div className="doctors-list">
+            <button onClick={_ => setShowDoctorForm(true)} className="add-doctors-button">Add Doctor</button>
             <Popup
-            trigger={<button className="add-doctors-button">Add Doctor</button>}
-            position="right center"
+            onClose={_ => setShowDoctorForm(false)}
+            open={showDoctorForm}
             >
                 <Form
                 title="New doctor info"
-                fields={doctoFields}
-                url={"/doctor"}
-                extraData={{}}
-                errorMsg="Error creating hospital"
-                afterSubmit={() => navigate(0)}
+                fields={doctorFields}
+                url={"/doctor/create"}
+                afterSubmit={() => {
+                    setShowDoctorForm(false)
+                    getDoctors()
+                }}
                 />
             </Popup>
-            {data.length === 0 ?
+            {data === undefined || data.length === 0 ?
             <h2 className="doctors-hint">Doctors you add will appear here</h2>
             :
             <ItemsList
@@ -87,37 +100,7 @@ function DoctorList(props: {doctors: Array<doctor>}) {
     )
 }
 
-type appointment = {
-    id: number,
-    date: string,
-    doctor_id: number,
-    doctor_name: string,
-    patient_name: string,
-    hospital_name: string,
-    end_time: string,
-    start_time: string,
-    patient_concerns: string,
-    patient_id: number,
-    patient_review: string | null,
-    patient_satisfaction: string | null,
-    sentiment: sentiment | undefined
-}
-
-type dashboardData = {
-    hospital: {
-        address: string,
-        close_time: string,
-        id: number,
-        name: string,
-        open_time: string,
-        phone: number
-    },
-    doctors: Array<doctor>,
-    appointments: Array<appointment>,
-    overall_score: sentiment
-}
-
-function AppointmentCard({appt}: {appt: appointment}) {
+function AppointmentCard({appt}: {appt: AdminsAppointment}) {
     return (
         <div className="appointment-card">
             <div>
@@ -177,8 +160,21 @@ function SentimentChart({sentiment}: {sentiment: sentiment | undefined}) {
     )
 }
 
-function AppointmentList(props: {appointments: Array<appointment>, overallScore: sentiment}) {
-    const apptData = props.appointments.map((appt, _) => (
+type AppointmentData = {
+    appointments: Array<AdminsAppointment>,
+    combined: sentiment
+}
+
+function AppointmentList() {
+    const [appointmentData, setAppointmentData] = useState<AppointmentData>()
+    const [loading, setLoading] = useState<boolean>(true)
+    useEffect(() => {
+        client.get('/appointment/admin', {withCredentials: true}).then(response => {
+            setAppointmentData(response.data)
+            setLoading(false)
+        })
+    }, [])
+    const apptData = appointmentData?.appointments.map((appt, _) => (
         [
             appt.doctor_name,
             appt.patient_name,
@@ -189,35 +185,37 @@ function AppointmentList(props: {appointments: Array<appointment>, overallScore:
             </Popup> : <button className="unreviewed">Unreviewed</button>
         ]
     ))
+
+    if (loading) return null
     return (
         <div className="appointment-list">
-            {props.appointments.length === 0 ?
+            {appointmentData?.appointments.length === 0 ?
             <h1 className="no-appointments">No appointments have been made yet</h1>
             :
             <>
             <div className="overall-score">
-                <h1>Overall Average Review Score </h1>
-                <SentimentChart sentiment={props.overallScore}/>
+                <h1>Average Review Score </h1>
+                <SentimentChart sentiment={appointmentData?.combined}/>
             </div>
-            <ItemsList dataItems={apptData} features={["Doctor", "Patient", "Date", ""]}/>
+            <ItemsList dataItems={apptData === undefined ? [] : apptData} features={["Doctor", "Patient", "Date", ""]}/>
             </>
             }
         </div>
     )
 }
 
-function MainDashboard({data}: {data: dashboardData}) {
+function MainDashboard(props: { hospitalName: string}) {
     const [selected, setSelected] = useState<number>(0)
     const buttonNames = ["Manage doctors", "Appointments"]
 
     const mainContents = [
-        <DoctorList doctors={data.doctors}/>,
-        <AppointmentList overallScore={data.overall_score} appointments={data.appointments}/>
+        <DoctorList/>,
+        <AppointmentList/>
     ]
     return (
         <div className="main-dashboard">
             <div className="dashboard-nav">
-                <h1 className="hospital-title">{data.hospital.name}</h1>
+                <h1 className="hospital-title">{props.hospitalName}</h1>
                 <div className="dashboard-nav-buttons">
                     {buttonNames.map((name, idx) => (
                         <DashboardButton
@@ -236,16 +234,19 @@ const hospitalRegisterFields = [
     makeField('Address', 'text', 'address'),
     makeField('Phone Contact', 'phone', 'phone'),
     makeField('Opening time', 'time', 'open_time'),
-    makeField('Closing time', 'time', 'close_time')
+    makeField('Closing time', 'time', 'close_time'),
+    makeField('Appointment Length (minutes)', 'number', 'appointment_length')
 ]
 
 function AdminDashboard() {
     const navigate = useNavigate()
-    const [dashboard, setDashboard] = useState<dashboardData>()
+    const [hospital, setHospital] = useState<AdminHospital>()
+
     const [loading, setLoading] = useState<boolean>(true)
+
     const getAdminDetails = () => {
-        client.get("/dashboard", {withCredentials: true}).then(response => {
-            setDashboard(response.data)
+        client.get("/hospital/admin", {withCredentials: true}).then(response => {
+            setHospital(response.data)
             setLoading(false)
         }).catch(_ => navigate("/admin-login"))
     }
@@ -260,14 +261,12 @@ function AdminDashboard() {
         <div className="admin-dashboard">
             <Header title="Admin Dashboard"></Header>
             <div className="dashboard-container">
-            {dashboard && dashboard.hospital.name ?
-            <MainDashboard data={dashboard}/> : 
+            {hospital && hospital.name  ?
+            <MainDashboard hospitalName={hospital.name}/> : 
             <Form
             title="Register hospital info"
             fields={hospitalRegisterFields}
-            url={"/hospital"}
-            extraData={{}}
-            errorMsg="Error creating hospital"
+            url={"/hospital/create"}
             afterSubmit={() => navigate(0)}
             />
             }

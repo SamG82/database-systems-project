@@ -1,49 +1,15 @@
 import Home from "./pages/home.tsx"
-import { makeField, commonFields, Form } from "./components/form.tsx"
-import AdminLogin from "./pages/admin-login.tsx"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import AdminDashboard from "./pages/admin-dashboard.tsx"
+
 import PatientPortal from "./pages/patient-portal.tsx"
+import PatientLogin from "./pages/patient-login.tsx"
+import PatientRegister from "./pages/patient-register.tsx"
 
 
-const patientRegisterFields = [
-  makeField('Name', 'text', 'name'),
-  makeField('Address', 'text', 'address'),
-  makeField('Phone', 'phone', 'phone'),
-  ...commonFields.login
-]
-const adminFields = patientRegisterFields.filter((field) => field.displayName != "Phone")
+import AdminDashboard from "./pages/admin-dashboard.tsx"
+import AdminLogin from "./pages/admin-login.tsx"
+import AdminRegister from "./pages/admin-register.tsx"
 
-const patientLoginForm = 
-  <Form
-  title="Login"
-  fields={commonFields.login}
-  url="/users/login"
-  redirect="/portal"
-  extraData={{"role": "patient"}}
-  errorMsg="Invalid username or password"
-  />
-
-
-const patientRegisterForm = 
-  <Form
-  title="Register"
-  fields={patientRegisterFields}
-  url="/users/register"
-  redirect="/login"
-  extraData={{"role": "patient"}}
-  errorMsg="An account already exists with that email"
-  />
-
-const adminRegisterForm = 
-  <Form
-  title="Admin Register"
-  fields={adminFields}
-  url="/users/register"
-  redirect="/admin-login"
-  extraData={{"role": "admin"}}
-  errorMsg="An account already exists with that email"
-  />
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,11 +17,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: patientLoginForm
+    element: <PatientLogin/>
   },
   {
     path: "/register",
-    element: patientRegisterForm
+    element: <PatientRegister/>
   },
   {
     path: "/portal",
@@ -67,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin-register",
-    element: adminRegisterForm
+    element: <AdminRegister/>
   },
   {
     path: "/dashboard",

@@ -17,7 +17,7 @@ CREATE TABLE Hospital (
     id INTEGER PRIMARY KEY,
     name CHAR(50) NOT NULL UNIQUE,
     address CHAR(50) NOT NULL UNIQUE,
-    appointment_length INTEGER NOT NULL CHECK(appointment_length >= 10 AND appointment_length <= 60),
+    appointment_length INTEGER NOT NULL,
     open_time CHAR(5) CHECK(open_time IS strftime('%H:%M', open_time)), --enforce time format
     close_time CHAR(5) CHECK(close_time IS strftime('%H:%M', close_time)), --enforce time format
     phone INTEGER NOT NULL UNIQUE,

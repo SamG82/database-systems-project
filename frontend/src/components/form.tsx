@@ -1,11 +1,9 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import TimePicker from "react-time-picker"
-import PhoneInput from "react-phone-input-2"
 import client from "../client"
 
-import "react-phone-input-2/lib/style.css"
-import "react-time-picker/dist/TimePicker.css"
+import { TimePicker } from "react-time-picker"
+import 'react-time-picker/dist/TimePicker.css'
 
 import "../../styles/form.css"
 
@@ -20,8 +18,7 @@ type Props = {
     fields: Array<Field>,
     url: string,
     redirect?: string,
-    extraData: {[key: string]: string},
-    errorMsg: string,
+    extraData?: {[key: string]: string},
     afterSubmit?: Function
 }
 
@@ -29,9 +26,17 @@ export const commonFields = {
     login: [
         makeField('Email', 'text', 'email'),
         makeField('Password', 'password', 'password')
+    ],
+    register: [
+        makeField('First Name', 'text', 'first_name'),
+        makeField('Last Name', 'text', 'last_name'),
+        makeField('Email', 'text', 'email'),
+        makeField('Password', 'password', 'password')
     ]
 }
+
 export function makeField(displayName: string, type: string, httpValue: string): Field {
+
     return {
         displayName,
         type,
@@ -40,16 +45,36 @@ export function makeField(displayName: string, type: string, httpValue: string):
 }
 
 export function Form(props: Props) {
-    const [error, setError] = useState<string>()
+    const [errors, setErrors] = useState<{[key: string]: string}>()
     const navigate = useNavigate()
     const [formFields, setFormFields] = useState<{[key: string]: string}>({})
 
+    const getErrorMsgs = (): Array<React.ReactNode> => {
+        let divs: Array<React.ReactNode> = []
+        
+        if (errors === undefined) { return []}
+
+        for (const error in errors) {
+            divs.push(<div className="error-box">{errors[error]}</div>)
+        }
+        return divs
+    }
+
     const submit = (e: React.MouseEvent) => {
         e.preventDefault()
-        client.post(props.url, {...formFields, ...props.extraData}).then(() => {
-            if (props.redirect) { navigate(props.redirect)}
-        }).catch(() => setError(props.errorMsg))
-        if (props.afterSubmit) { props.afterSubmit() } 
+        client.post(props.url, {...formFields, ...props.extraData}, {withCredentials: true}).then(() => {
+            if (props.redirect) {
+                setErrors({})
+                navigate(props.redirect)
+            }
+
+            if (props.afterSubmit) {
+                props.afterSubmit()
+            }
+            
+        }).catch((error) => {
+            setErrors(error.response.data.errors)
+        })
     }
 
     const updateFormField = (fieldName: string, value: string | null) => {
@@ -74,29 +99,22 @@ export function Form(props: Props) {
                             onChange={v => updateFormField(field.httpValue, v)}/>
                         </div>
                     )
-                } else if (field.type === "phone") {
-                    return (
-                        <div className="form-field" key={i}>
-                            <h2 className="form-field-name">{field.displayName}</h2>
-                            <PhoneInput
-                            onlyCountries={['us']}
-                            value={formFields[field.httpValue]}
-                            onChange={v => updateFormField(field.httpValue, String(v))}/>
-                        </div>
-                    )
-                }
+                } 
                 return (
                     <div className="form-field" key={i}>
                         <h2 className="form-field-name">{field.displayName}</h2>
                         <input className="form-field-input"
                         type={field.type}
                         onChange={e => updateFormField(field.httpValue, e.target.value)}
-                        value={formFields[field.httpValue]}/>
+                        value={formFields[field.httpValue]}
+                        min={field.type === "number" ? 10 : undefined}
+                        max={field.type === "number" ? 60 : undefined}
+                        step={field.type === "number" ? 5 : undefined}/>
                     </div>
                 )
             })}
             </form>
-            {error && <div className="error-box">{error}</div>}
+            {getErrorMsgs()}
             <button className="submit-button" onClick={e => submit(e)}>Submit</button>
         </div>
     )

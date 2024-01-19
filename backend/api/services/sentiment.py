@@ -30,6 +30,7 @@ def analyze_sentiments(appointments: list[dict]) -> dict[str, float]:
 
         processed = preprocess(appointment['patient_review'])
         sentiment = analyzer.polarity_scores(processed)
+
         del sentiment['compound']
 
         # add the values to the combined score

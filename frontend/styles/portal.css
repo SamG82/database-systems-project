@@ -103,6 +103,8 @@
     border-radius: 15px;
     display: flex;
     flex-direction: column;
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .time-list button {
@@ -219,4 +221,3 @@
     padding: 0.6rem;
     font-size: 1.2rem;
 }
-

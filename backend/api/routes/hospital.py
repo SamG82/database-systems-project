@@ -8,6 +8,7 @@ hospital_blueprint = Blueprint('hospital', __name__, url_prefix='/hospital')
 
 create_hospital_sql = 'INSERT INTO Hospital(name, address, appointment_length, open_time, close_time, phone, admin_id) VALUES(?,?,?,?,?,?,?)'
 get_all_hospitals_sql = 'SELECT id, name, address, open_time, close_time, phone FROM Hospital'
+get_hospital_by_admin_sql = 'SELECT * FROM Hospital where admin_id = ?'
 
 # creates a hospital for an admin 
 @hospital_blueprint.route('/create', methods=['POST'])
@@ -22,9 +23,13 @@ def create_hospital(hospital_data, user_context):
 
     return execute_commit_error_check(g.db, g.cursor, create_hospital_sql, values)
 
-# gets a list of all hospitals for a patient
 @hospital_blueprint.route('/', methods=['GET'])
 @protected_route(['patient'])
-def get_all_hospitals(user_context):
+def get_patient_hospitals(user_context):
     return query_to_dict(g.cursor, get_all_hospitals_sql), 200
 
+@hospital_blueprint.route('/admin', methods=['GET'])
+@protected_route(['admin'])
+def get_admin_hospital(user_context):
+    res = query_to_dict(g.cursor, get_hospital_by_admin_sql, (user_context['id'],), many=False)
+    return res, 200

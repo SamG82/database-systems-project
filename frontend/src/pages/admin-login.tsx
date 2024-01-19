@@ -20,10 +20,8 @@ function AdminLogin() {
             <Form
             title="Admin Login"
             fields={commonFields.login}
-            url="/users/login"
+            url="/admin/login"
             redirect="/dashboard"
-            extraData={{"role": "admin"}}
-            errorMsg="Invalid username or password"
             />
             <Link style={linkStyle} to="/admin-register">Don't have an administrator account?</Link>
         </div>

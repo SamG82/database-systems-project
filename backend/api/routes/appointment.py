@@ -21,16 +21,31 @@ update_appointment_review_sql = '''
 '''
 
 get_admins_appointments_sql = '''
-    SELECT * FROM Appointment
-    WHERE doctor_id IN
+    SELECT
+    Appointment.id, Appointment.doctor_id, Appointment.patient_id, 
+    start_time, end_time, date,
+    patient_concerns, patient_review, patient_satisfaction,
+    Patient.first_name || ' ' || Patient.last_name AS patient_name,
+    Doctor.first_name || ' ' || Doctor.last_name AS doctor_name
+    FROM Appointment
+    JOIN Patient ON Patient.id = Appointment.patient_id
+    JOIN Doctor ON Doctor.id == Appointment.doctor_id
+    WHERE Appointment.doctor_id IN
     (SELECT id FROM Doctor WHERE hospital_id
         = (SELECT id FROM Hospital WHERE admin_id = ?)
     )
 '''
 
 get_patients_appointments_sql = '''
-    SELECT * FROM Appointment
-    WHERE patient_id = ?
+    SELECT
+    Hospital.name as hospital_name, Doctor.first_name || ' ' || Doctor.last_name AS doctor_name,
+    Appointment.id, Appointment.doctor_id,
+    Appointment.start_time, Appointment.end_time, Appointment.date,
+    Appointment.patient_concerns, Appointment.patient_review, Appointment.patient_satisfaction
+    FROM Appointment
+    JOIN Doctor ON Appointment.doctor_id = Doctor.id
+    JOIN Hospital ON Doctor.hospital_id = Hospital.id
+    WHERE Appointment.patient_id = ?
 '''
 
 get_valid_appointment_times_sql = '''
@@ -83,29 +98,24 @@ def review_appointment(review_data, user_context, appointment_id):
 
     return execute_commit_error_check(g.db, g.cursor, update_appointment_review_sql, values)
 
-# get admin's or patient's appointments depending on which type the user is
-@appointment_blueprint.route('/', methods=['GET'])
-@protected_route(['patient', 'admin'])
-def get_users_appointments(user_context):
+@appointment_blueprint.route('/patient', methods=['GET'])
+@protected_route(['patient'])
+def get_patient_appointmetns(user_context):
+    return query_to_dict(g.cursor, get_patients_appointments_sql, (user_context['id'],)), 200
 
-    # get admin's hospital's appointments with sentiment scores if the user is an admin
-    if user_context['role'] == 'admin':
-        appointments_list = query_to_dict(g.cursor, get_admins_appointments_sql, (user_context['id'],))
+@appointment_blueprint.route('/admin', methods=['GET'])
+@protected_route(['admin'])
+def get_admin_appintments(user_context):
+    appointments_list = query_to_dict(g.cursor, get_admins_appointments_sql, (user_context['id'],))
 
-        combined_score = analyze_sentiments(appointments_list)
-        return {
-            'combined': combined_score,
-            'appointments': appointments_list
-        }
-    
-    # get patient's appointments if the user is a patient
-    elif user_context['role'] == 'patient':
-        return query_to_dict(g.cursor, get_patients_appointments_sql, (user_context['id'],)), 200
-    
-    return {}, 400
+    combined_score = analyze_sentiments(appointments_list)
+    return {
+        'combined': combined_score,
+        'appointments': appointments_list
+    }, 200
 
 # get a list of valid times for a new appointment
-@appointment_blueprint.route('/times/<int:doctor_id>/<string:date>', methods=['GET'])
+@appointment_blueprint.route('/times/<int:doctor_id>/<string:date>/', methods=['GET'])
 @protected_route(['patient'])
 def get_valid_times(user_context, doctor_id, date):
     try:

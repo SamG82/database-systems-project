@@ -6,60 +6,16 @@ import "react-datepicker/dist/react-datepicker.css"
 import ItemsList from "../components/item-list"
 import client from "../client"
 import { formatTime } from "../utils"
-import Header from "../components/header"
 
 import "../../styles/portal.css"
 import PopupSelector from "../components/popup-selector"
 import Popup from "reactjs-popup"
 
-type timeSlots = {
-    start: string,
-    end: string
-}[]
+import { PatientsAppointment, TimeSlot } from "../interfaces/appointment"
+import { PatientHospital } from "../interfaces/hospital"
+import { Doctor } from "../interfaces/doctor"
 
-type appointment = {
-    id: number,
-    date: string,
-    doctor_id: number,
-    doctor_name: string,
-    hospital_name: string,
-    end_time: string,
-    start_time: string,
-    patient_concerns: string,
-    patient_id: number,
-    patient_review: string | null,
-    patient_satisfaction: string | null,
-    sentiment: {
-        neg: number,
-        neu: number,
-        pos:  number
-    } | undefined
-}
-
-type portalData = {
-    name: string,
-    appointments: Array<appointment>
-}
-
-type hospitalData = {
-    address: string,
-    close_time: string,
-    doctors: {
-        available: boolean,
-        id: number,
-        name: string,
-        specialization: string,
-        average_rating: number
-    }[],
-    id: number,
-    name: string,
-    open_time: string,
-    phone: number
-}[]
-
-function ReviewForm(props: {id: number}) {
-    const navigate = useNavigate()
-
+function ReviewForm(props: {id: number, getAppointments: Function}) {
     const [satisfaction, setSatisfaction] = useState<number>(3)
     const [review, setReview] = useState<string>("")
 
@@ -72,10 +28,10 @@ function ReviewForm(props: {id: number}) {
     }
 
     const submitReview = () => {
-        client.patch(`/appointment/${props.id}`, {
-            satisfaction,
-            review
-        }).then(_ => navigate(0))
+        client.patch(`/appointment/review/${props.id}`, {
+            patient_satisfaction: satisfaction,
+            patient_review: review
+        }).then(_ => props.getAppointments())
     }
     
     return (
@@ -102,8 +58,26 @@ function ReviewForm(props: {id: number}) {
     )
 }
 
-function AppointmentsList(props: {appointments: Array<appointment>}) {
-    const appointmentData = props.appointments.map(value => ([
+function AppointmentsList() {
+    const [appointments, setAppointments] = useState<Array<PatientsAppointment>>([])
+    const navigate = useNavigate()
+    const [loading, setLoading] = useState<boolean>(true)
+
+    const getAppointments = () => {
+        client.get('/appointment/patient', {withCredentials: true}).then(response => {
+            setAppointments(response.data)
+            setLoading(false)
+        }).catch(error => {
+            if (error.response.status === 401) {
+                navigate('/login')
+            }
+        })
+    }
+    useEffect(() => {
+       getAppointments()
+    }, [])
+
+    const appointmentData = appointments.map(value => ([
         value.hospital_name,
         value.doctor_name,
         value.date,
@@ -111,14 +85,15 @@ function AppointmentsList(props: {appointments: Array<appointment>}) {
         value.patient_satisfaction === null ?  
         <Popup
         trigger={<button className="review-button">Review</button>}
-        position={"left center"}><ReviewForm id={value.id}/></Popup>
+        position={"left center"}><ReviewForm getAppointments={getAppointments} id={value.id}/></Popup>
         :
         <button className="reviewed-button">Reviewed</button>
     ]))
 
+    if (loading) return null
     return (
         <div className="appointment-list">
-            {props.appointments.length > 0 ? 
+            {appointments !== undefined && appointments.length > 0 ? 
             <ItemsList
             features={["Hospital", "Doctor", "Date", "Time", ""]}
             dataItems={appointmentData}/> : <h1 className="no-appointments">Appointments you make will appear here</h1>}
@@ -128,8 +103,10 @@ function AppointmentsList(props: {appointments: Array<appointment>}) {
 function AppointmentScheduler() {
     const navigate = useNavigate()
 
-    const [hospitals, setHospitals] = useState<hospitalData>()
-    const [times, setTimes] = useState<timeSlots>()
+    const [hospitals, setHospitals] = useState<Array<PatientHospital>>([])
+    const [doctors, setDoctors] = useState<Array<Doctor>>([])
+
+    const [times, setTimes] = useState<Array<TimeSlot>>()
 
     const [hospitalChoice, setHospitalChoice] = useState<number>()
     const [doctorChoice, setDoctorChoice] = useState<number>()
@@ -153,31 +130,40 @@ function AppointmentScheduler() {
     }
 
     useEffect(() => {
-        client.get('/hospitals', {withCredentials: true}).then(response => {
+        client.get('/hospital/', {withCredentials: true}).then(response => {
             setHospitals(response.data)
             setLoading(false)
         })
     }, [])
     
+    useEffect(() => {
+        client.get(`/doctor/available/${hospitalChoice}`, {withCredentials: true}).then(response => {
+            setDoctors(response.data)
+        })
+    }, [hospitalChoice])
+
     const updateDate = (date: Date) => {
         setDate(date)
+    }
+
+    useEffect(() => {
+        if (date === undefined) return
         const formatted_date = date.toISOString().split("T")[0]
-        client.get(`/appointment/times/${formatted_date}/${doctorChoice}`, { withCredentials: true})
+
+        client.get(`/appointment/times/${doctorChoice}/${formatted_date}`, { withCredentials: true})
             .then(response => {
                 setTimes(response.data)
             })
-    }
+    }, [doctorChoice, date])
 
     const submitAppointment = () => {
         if (times === undefined) {
             return
         }
-
-        console.log(times[selectedTime])
-        client.post('/appointment', {
+        
+        client.post('/appointment/create', {
             doctor_id: doctorChoice,
-            start_time: times[selectedTime].start.slice(0, -3),
-            end_time: times[selectedTime].end.slice(0, -3),
+            ...times[selectedTime],
             date: date?.toISOString().split("T")[0],
             patient_concerns: concerns
         }).then(_ => navigate(0))
@@ -195,13 +181,12 @@ function AppointmentScheduler() {
         }
     ))
 
-    const doctorItems = hospitals?.find(h => h.id === hospitalChoice)?.doctors.map((doctor, _) => (
+    const doctorItems = doctors?.map((doctor, _) => (
         {
-            "name": doctor.name,
+            "name": `${doctor.first_name} ${doctor.last_name}`,
             "id": doctor.id,
             "features": {
-                "Specialization": doctor.specialization,
-                "Rating": `${doctor.average_rating} / 5`
+                "Specialization": doctor.specialization
             }
         }
     ))
@@ -234,13 +219,13 @@ function AppointmentScheduler() {
                     <Popup
                     trigger={
                     <button className="selector-button">
-                        {times === undefined ? "" : `${formatTime(times[selectedTime].start)} - ${formatTime(times[selectedTime].end)}`}
+                        {times === undefined ? "" : `${formatTime(times[selectedTime].start_time)} - ${formatTime(times[selectedTime].end_time)}`}
                     </button>}
                     position={"right center"}
                     >
                         <div className="time-list">
                             {times?.map((value, idx) => (
-                                <button onClick={_ => setSelectedTime(idx)}>{formatTime(value.start)} - {formatTime(value.end)}</button>
+                                <button onClick={_ => setSelectedTime(idx)}>{formatTime(value.start_time)} - {formatTime(value.end_time)}</button>
                             ))}
                         </div>
                     </Popup>
@@ -257,32 +242,10 @@ function AppointmentScheduler() {
 }
 
 function PatientPortal() {
-    const navigate = useNavigate()
-    const [portal, setPortal] = useState<portalData>({
-        name: "",
-        appointments: []
-    })
-    const [loading, setLoading] = useState<boolean>(true)
-    const getPatientDetails = () => {
-        client.get("/portal", {withCredentials: true}).then(response => {
-            setPortal(response.data)
-            setLoading(false)
-        }).catch(_ => navigate("/login"))
-    }
-
-    // get dashboard details whenever loaded
-    useEffect(() => {
-        getPatientDetails()
-    }, [])
-
     const [displayAppts, setDisplayAppts] = useState<boolean>(true)
 
-    if (loading) return null
     return (
         <div className="patient-portal">
-            <Header title="Patient Portal">
-                <h3>Welcome back, <span className="patient-name">{portal?.name}</span></h3>
-            </Header>
             <div className="appointment-manager">
                 <div className="appointment-header">
                     <h1>Appointment Manager</h1>
@@ -296,7 +259,7 @@ function PatientPortal() {
                     </div>
                 </div>
                 {displayAppts ?
-                <AppointmentsList appointments={portal.appointments}/> :
+                <AppointmentsList/> :
                 <AppointmentScheduler/>}
             </div>
         </div>

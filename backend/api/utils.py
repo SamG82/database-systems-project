@@ -8,7 +8,7 @@ def query_to_dict(cursor, query, args=(), many=True):
     res_dict = [dict((res.description[i][0], value) \
                for i, value in enumerate(row)) for row in res.fetchall()]
     
-    return (res_dict[0] if res_dict else None) if not many else res_dict
+    return (res_dict[0] if res_dict else dict()) if not many else res_dict
 
 # execute and commit a query with error checking and proper response formatting
 def execute_commit_error_check(db, cursor, query, args=()) -> tuple[dict[None], int] | tuple[dict[str, str], int]:
