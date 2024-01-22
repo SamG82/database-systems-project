@@ -1,5 +1,5 @@
-from flask import Blueprint, g
-from api.services.auth import handle_login, handle_register, Role
+from flask import Blueprint, request, g
+from api.services.auth import handle_login, handle_logout, handle_register, Role
 from api.schemas.user import UserRegistration, UserLogin
 from api.schemas import validate_with
 
@@ -17,5 +17,9 @@ def create_patient(data):
 # logs in a patient and applies cookie token
 @patient_blueprint.route('/login', methods=['POST'])
 @validate_with(UserLogin)
-def login_admin(login_data):
+def login_patient(login_data):
     return handle_login(g.db.cursor(), login_data, find_patient_credentials_by_email, Role.PATIENT)
+
+@patient_blueprint.route('/logout', methods=['POST'])
+def logout_patient():
+    return handle_logout('patient', request)

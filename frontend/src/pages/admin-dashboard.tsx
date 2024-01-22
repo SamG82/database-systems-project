@@ -259,7 +259,7 @@ function AdminDashboard() {
     if (loading) return null
     return (
         <div className="admin-dashboard">
-            <Header title="Admin Dashboard"></Header>
+            <Header userRole="admin" title="Admin Dashboard"></Header>
             <div className="dashboard-container">
             {hospital && hospital.name  ?
             <MainDashboard hospitalName={hospital.name}/> : 

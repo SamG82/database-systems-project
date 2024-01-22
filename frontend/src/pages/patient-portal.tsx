@@ -14,6 +14,7 @@ import Popup from "reactjs-popup"
 import { PatientsAppointment, TimeSlot } from "../interfaces/appointment"
 import { PatientHospital } from "../interfaces/hospital"
 import { Doctor } from "../interfaces/doctor"
+import Header from "../components/header"
 
 function ReviewForm(props: {id: number, getAppointments: Function}) {
     const [satisfaction, setSatisfaction] = useState<number>(3)
@@ -246,6 +247,7 @@ function PatientPortal() {
 
     return (
         <div className="patient-portal">
+            <Header userRole="patient" title="Patient Portal"/>
             <div className="appointment-manager">
                 <div className="appointment-header">
                     <h1>Appointment Manager</h1>

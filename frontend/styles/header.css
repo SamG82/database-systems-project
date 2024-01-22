@@ -5,6 +5,11 @@
     font-size: 1.4rem;
     justify-content: space-between;
 }
+
+.header h1 {
+    margin-left: 2rem;
+}
+
 .spacer {
     text-align: center;
 }

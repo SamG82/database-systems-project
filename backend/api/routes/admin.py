@@ -1,5 +1,5 @@
-from flask import Blueprint, g
-from api.services.auth import handle_register, handle_login, Role
+from flask import Blueprint, request, g
+from api.services.auth import handle_register, handle_login, handle_logout, Role
 from api.schemas.user import UserRegistration, UserLogin
 from api.schemas import validate_with
 
@@ -21,4 +21,6 @@ def create_admin(data):
 def login_admin(login_data):
     return handle_login(g.db.cursor(), login_data, find_admin_pw_by_email, Role.ADMIN)
 
-
+@admin_blueprint.route('/logout', methods=['POST'])
+def logout_admin():
+    return handle_logout('admin', request)

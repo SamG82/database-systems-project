@@ -5,13 +5,14 @@ import { PropsWithChildren } from "react"
 
 type Props = {
     title: string
+    userRole: "admin" | "patient"
 }
 
 function Header(props: PropsWithChildren<Props>) {
     const navigate = useNavigate()
 
     const logout = () => {
-        client.post('/users/logout', {}, {withCredentials: true})
+        client.post(`/${props.userRole}/logout`, {}, {withCredentials: true})
             .then(_ => navigate("/"))
     }
     return (

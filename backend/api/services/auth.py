@@ -91,6 +91,18 @@ def handle_login(cursor, request_json, find_credentials_sql, role: Role):
 
     return resp
 
+def handle_logout(role, request):
+    token = request.cookies.get('token')
+    decoded = decode_jwt(token)
+    if decoded == False or decoded['role'] != role:
+        return {}, 401
+
+    resp = make_response()
+    resp.set_cookie('token', '', expires=0)
+    resp.status_code = 200
+
+    return resp
+
 # applies authentication to the decorated route handler based on the supplied list of roles
 # checks for valid token
 def protected_route(roles: list[Role]):
