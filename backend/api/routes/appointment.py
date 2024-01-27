@@ -1,4 +1,4 @@
-from flask import Blueprint, g
+from flask import Blueprint, g, jsonify, request
 from api.services.auth import protected_route
 from api.schemas import validate_with
 from api.schemas.appointment import AppointmentCreate, AppointmentReview
@@ -124,3 +124,17 @@ def get_valid_times(user_context, doctor_id, date):
         return {'error': 'Date should be YYYY-MM-DD'}, 400
     
     return query_to_dict(g.cursor, get_valid_appointment_times_sql, (doctor_id, date)), 200
+
+@appointment_blueprint.route('/suggestions', methods=['POST'])
+@protected_route(['patient'])
+def generate_suggestions_route(user_context):
+    try:
+        text = request.json.get('text', '')
+        if len(text) > 10:
+            gemini_output = gemini_function(text)
+            return jsonify({'output_text': gemini_output}), 200
+        else:
+            return jsonify({'error': 'Text must be greater than 10 characters'}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
