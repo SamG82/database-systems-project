@@ -1,10 +1,11 @@
-from flask import Blueprint, g, jsonify, request
+from flask import Blueprint, g, request
 from api.services.auth import protected_route
 from api.schemas import validate_with
 from api.schemas.appointment import AppointmentCreate, AppointmentReview
 from api.utils import execute_commit_error_check, query_to_dict
 import datetime
 from api.services.sentiment import analyze_sentiments
+from api.services.gemini import get_symptoms_suggestions
 
 appointment_blueprint = Blueprint('appointment', __name__, url_prefix='/appointment')
 
@@ -131,10 +132,10 @@ def generate_suggestions_route(user_context):
     try:
         text = request.json.get('text', '')
         if len(text) > 10:
-            gemini_output = gemini_function(text)
-            return jsonify({'output_text': gemini_output}), 200
+            gemini_output = get_symptoms_suggestions(text)
+            return {'output_text': gemini_output}, 200
         else:
-            return jsonify({'error': 'Text must be greater than 10 characters'}), 400
+            return {'error': 'Text must be greater than 10 characters'}, 400
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return {'error': str(e)}, 500
