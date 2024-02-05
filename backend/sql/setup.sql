@@ -59,7 +59,7 @@ CREATE TABLE Appointment (
     start_time CHAR(5) NOT NULL CHECK(start_time IS strftime('%H:%M', start_time)), --enforce time format
     end_time CHAR(5) NOT NULL CHECK(end_time IS strftime('%H:%M', end_time)), -- enforce time format
     date CHAR(10) NOT NULL CHECK(date IS strftime('%Y-%m-%d', date)), --enforce date format
-    patient_concerns CHAR(150),
+    patient_symptoms CHAR(500),
     patient_review CHAR(150),
     patient_satisfaction INTEGER CHECK((patient_satisfaction > 0 and patient_satisfaction < 6) or patient_satisfaction IS NULL),
     FOREIGN KEY(doctor_id) REFERENCES Doctor(id),

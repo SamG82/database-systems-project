@@ -59,6 +59,34 @@ function ReviewForm(props: {id: number, getAppointments: Function}) {
     )
 }
 
+function SymptomsSuggester(props: {symptomsText: string, suggestedText: string, isOpen: boolean, setOpen: Function, setSymptoms: Function}) {
+    return (
+        <Popup open={props.isOpen} onClose={_ => props.setOpen(false)}>
+            <div className="symptoms-suggester">
+                <h1>Use suggestions to better describe your symptoms</h1>
+                <div className="text-comparisons">
+                    <div className="suggester-text">{props.symptomsText}</div>
+                    <div className="suggester-divider">
+                        <div className="line-divider"/>
+                        <span>&darr;</span>
+                        <div className="line-divider"/>
+                    </div>
+                    <div className="suggester-text">{props.suggestedText}</div>
+                </div>
+                <div className="button-choices">
+                    <button className="review-button" onClick={_ => {
+                        props.setOpen(false)
+                        props.setSymptoms(props.suggestedText)
+                    }}>Apply</button>
+                    <button className="review-button discard-button" onClick={_ => {
+                        props.setOpen(false)
+                    }}>Discard</button>
+                </div>
+            </div>
+        </Popup>
+    )
+}
+
 function AppointmentsList() {
     const [appointments, setAppointments] = useState<Array<PatientsAppointment>>([])
     const navigate = useNavigate()
@@ -113,14 +141,18 @@ function AppointmentScheduler() {
     const [doctorChoice, setDoctorChoice] = useState<number>()
     const [date, setDate] = useState<Date>()
     const [selectedTime, setSelectedTime] = useState<number>(0)
-    const [concerns, setConcerns] = useState<string>("")
+    const [symptoms, setSymptoms] = useState<string>("")
+    const symptomMaxLength = 500;
 
-    const updateConcerns = (text: string) => {
-        if (text.length > 150) {
+    const [showSuggetions, setShowSuggestions] = useState<boolean>(false)
+    const [suggestedText, setSuggestedText] = useState<string>("")
+
+    const updateSymptoms = (text: string) => {
+        if (text.length > symptomMaxLength) {
             return
         }
 
-        setConcerns(text)
+        setSymptoms(text)
     }
 
     const [loading, setLoading] = useState<boolean>(true)
@@ -157,6 +189,15 @@ function AppointmentScheduler() {
             })
     }, [doctorChoice, date])
 
+    const getAndShowSuggestions = () => {
+        client.post('/appointment/suggestions', {
+            text: symptoms
+        }, {withCredentials: true}).then((response) => {
+            setSuggestedText(response.data.output_text)
+            setShowSuggestions(true)
+        })
+    }
+
     const submitAppointment = () => {
         if (times === undefined) {
             return
@@ -166,7 +207,7 @@ function AppointmentScheduler() {
             doctor_id: doctorChoice,
             ...times[selectedTime],
             date: date?.toISOString().split("T")[0],
-            patient_concerns: concerns
+            patient_symptoms: symptoms
         }).then(_ => navigate(0))
     }
 
@@ -232,12 +273,22 @@ function AppointmentScheduler() {
                     </Popup>
                 </div>
             </div>
-            <div className="concerns-input">
-                <h1>Concerns</h1>
-                <span>{150 - concerns.length}</span>
-                <textarea rows={5} cols={40} value={concerns} onChange={e => updateConcerns(e.target.value)}/>
+            <div className="symptoms-input">
+                <h1>Symptoms</h1>
+                {symptoms.length > 10 && symptoms != suggestedText ?
+                <button onClick={_ => {
+                    getAndShowSuggestions()
+                }} className="review-button show-suggestions-button">Show suggestions</button>
+                : null
+                }
+                <SymptomsSuggester
+                isOpen={showSuggetions} setOpen={setShowSuggestions}
+                symptomsText={symptoms} suggestedText={suggestedText}
+                setSymptoms={setSymptoms}/>
+                <span>{symptomMaxLength - symptoms.length}</span>
+                <textarea rows={5} cols={40} value={symptoms} onChange={e => updateSymptoms(e.target.value)}/>
             </div>
-            <button onClick={_ => submitAppointment()} className="appointments-button-active submit">Submit</button>
+            <button onClick={_ => submitAppointment()} className="appointments-button-active submit">Schedule</button>
         </div>
     )
 }

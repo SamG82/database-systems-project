@@ -11,7 +11,7 @@ export interface PatientsAppointment {
     start_time: string,
     end_time: string,
     date: string,
-    patient_concerns: string,
+    patient_symptoms: string,
     patient_review?: string,
     patient_satisfaction?: number,
     sentiment?: {

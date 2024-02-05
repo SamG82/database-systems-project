@@ -10,7 +10,7 @@ from api.services.gemini import get_symptoms_suggestions
 appointment_blueprint = Blueprint('appointment', __name__, url_prefix='/appointment')
 
 create_appointment_sql = '''
-    INSERT INTO Appointment(doctor_id, patient_id, start_time, end_time, date, patient_concerns)
+    INSERT INTO Appointment(doctor_id, patient_id, start_time, end_time, date, patient_symptoms)
     VALUES(?,?,?,?,?,?)
 '''
 
@@ -25,7 +25,7 @@ get_admins_appointments_sql = '''
     SELECT
     Appointment.id, Appointment.doctor_id, Appointment.patient_id, 
     start_time, end_time, date,
-    patient_concerns, patient_review, patient_satisfaction,
+    patient_symptoms, patient_review, patient_satisfaction,
     Patient.first_name || ' ' || Patient.last_name AS patient_name,
     Doctor.first_name || ' ' || Doctor.last_name AS doctor_name
     FROM Appointment
@@ -42,7 +42,7 @@ get_patients_appointments_sql = '''
     Hospital.name as hospital_name, Doctor.first_name || ' ' || Doctor.last_name AS doctor_name,
     Appointment.id, Appointment.doctor_id,
     Appointment.start_time, Appointment.end_time, Appointment.date,
-    Appointment.patient_concerns, Appointment.patient_review, Appointment.patient_satisfaction
+    Appointment.patient_symptoms, Appointment.patient_review, Appointment.patient_satisfaction
     FROM Appointment
     JOIN Doctor ON Appointment.doctor_id = Doctor.id
     JOIN Hospital ON Doctor.hospital_id = Hospital.id
@@ -85,7 +85,7 @@ get_valid_appointment_times_sql = '''
 def create_appointment(appointment_data, user_context):
     values = (appointment_data['doctor_id'], user_context['id'],
               appointment_data['start_time'].strftime('%H:%M'), appointment_data['end_time'].strftime('%H:%M'),
-              appointment_data['date'].strftime('%Y-%m-%d'), appointment_data['patient_concerns'])
+              appointment_data['date'].strftime('%Y-%m-%d'), appointment_data['patient_symptoms'])
 
     return execute_commit_error_check(g.db, g.cursor, create_appointment_sql, values)
 
