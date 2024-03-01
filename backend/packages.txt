@@ -5,3 +5,5 @@ pyjwt
 bcrypt
 nltk
 marshmallow
+SpeechRecognition
+PyAudio
