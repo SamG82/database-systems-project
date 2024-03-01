@@ -3,7 +3,7 @@ import speech_recognition as sr
 def main():
     r = sr.Recognizer()
     #get key from google cloud
-    service_account_json = "C:/Users/Kendall Eberly/Downloads/integral-hold-415920-796939893651.json"
+    service_account_json = "./gemini.json"
 
     # obtain audio from the microphone
     with sr.Microphone() as source:
