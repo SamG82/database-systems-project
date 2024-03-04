@@ -24,6 +24,7 @@ def main():
         print('Google Cloud Speech Recognition could not understand audio')
     except sr.RequestError as e:
         print('Could not request results from Google Cloud Speech Recognition service; {0}'.format(e))
+    return text
 
 if __name__ == "__main__":
     main()

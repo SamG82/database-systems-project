@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
-
+from speech_to_text import main
 load_dotenv()
 API_KEY = os.getenv('gemini_api_key')
 
@@ -16,7 +16,8 @@ PROMPT_BASE = '''Your role is to function as a translation layer between everyda
                 Your responses should be a concise list and focused solely on the translation of this description, not a diagnosis: '''
 
 def get_symptoms_suggestions(symptoms_text: str) -> list[str]:
-    prompt = PROMPT_BASE + symptoms_text
+    text_to_speech = main()
+    prompt = PROMPT_BASE + (symptoms_text if symptoms_text else '') + (text_to_speech if text_to_speech else '')
     response = model.generate_content(prompt, generation_config=gen_config)
 
     return response.text.replace('\n', ' ').replace('- ', '')
