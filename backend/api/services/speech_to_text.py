@@ -3,15 +3,15 @@ import speech_recognition as sr
 def main():
     r = sr.Recognizer()
     #get key from google cloud
-    service_account_json = "./gemini.json"
+    service_account_json = "C:/Users/Kendall Eberly/Downloads/gemini.json"
 
-    # obtain audio from the microphone
-    with sr.Microphone() as source:
-        print('Say something...')
-        audio = r.listen(source)
+    wav_file_path = "C:/Users/Kendall Eberly/Documents/Sound Recordings/Recording.wav"
+
+    with sr.AudioFile(wav_file_path) as source:
+        print('Processing audio file...')
+        audio = r.record(source)
         print('Done!')
-
-    # recognize speech using Google Cloud Speech
+  
     try:
         text = r.recognize_google_cloud(
             audio_data=audio,
