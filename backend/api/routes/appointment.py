@@ -3,9 +3,11 @@ from api.services.auth import protected_route
 from api.schemas import validate_with
 from api.schemas.appointment import AppointmentCreate, AppointmentReview
 from api.utils import execute_commit_error_check, query_to_dict
-import datetime
 from api.services.sentiment import analyze_sentiments
 from api.services.gemini import get_symptoms_suggestions
+from api.services.speech_to_text import transcribe
+
+import datetime
 
 appointment_blueprint = Blueprint('appointment', __name__, url_prefix='/appointment')
 
@@ -139,3 +141,14 @@ def generate_suggestions_route(user_context):
 
     except Exception as e:
         return {'error': str(e)}, 500
+"""
+upload = request.files['audio']
+    filename = secure_filename(upload.filename)
+    save_path = os.path.join('uploads', filename)
+    upload.save(save_path)
+    return {}, 200
+"""
+@appointment_blueprint.route('/suggestions-audio', methods=['POST'])
+@protected_route(['patient'])
+def generate_suggestions_from_audio(user_context):
+    return {'text': transcribe(request.files['audio'])}, 200

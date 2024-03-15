@@ -15,6 +15,7 @@ import { PatientsAppointment, TimeSlot } from "../interfaces/appointment"
 import { PatientHospital } from "../interfaces/hospital"
 import { Doctor } from "../interfaces/doctor"
 import Header from "../components/header"
+import AudioRecorder from "../components/audio-recorder"
 
 function ReviewForm(props: {id: number, getAppointments: Function}) {
     const [satisfaction, setSatisfaction] = useState<number>(3)
@@ -288,6 +289,7 @@ function AppointmentScheduler() {
                 <span>{symptomMaxLength - symptoms.length}</span>
                 <textarea rows={5} cols={40} value={symptoms} onChange={e => updateSymptoms(e.target.value)}/>
             </div>
+            <AudioRecorder/>
             <button onClick={_ => submitAppointment()} className="appointments-button-active submit">Schedule</button>
         </div>
     )
