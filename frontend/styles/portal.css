@@ -123,8 +123,6 @@
 .symptoms-input {
     text-align: center;
     padding: 1rem;
-    display: flex;
-    flex-direction: column;
 }
 
 .symptoms-input span {

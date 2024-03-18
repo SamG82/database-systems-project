@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import DatePicker from "react-datepicker"
+import { CircularProgress, Stack } from "@mui/material"
 import "react-datepicker/dist/react-datepicker.css"
 
 import ItemsList from "../components/item-list"
@@ -147,6 +148,7 @@ function AppointmentScheduler() {
 
     const [showSuggetions, setShowSuggestions] = useState<boolean>(false)
     const [suggestedText, setSuggestedText] = useState<string>("")
+    const [suggestionsLoading, setSuggestionsLoading] = useState<boolean>(false)
 
     const updateSymptoms = (text: string) => {
         if (text.length > symptomMaxLength) {
@@ -276,20 +278,27 @@ function AppointmentScheduler() {
             </div>
             <div className="symptoms-input">
                 <h1>Symptoms</h1>
-                {symptoms.length > 10 && symptoms != suggestedText ?
-                <button onClick={_ => {
-                    getAndShowSuggestions()
-                }} className="review-button show-suggestions-button">Show suggestions</button>
-                : null
-                }
-                <SymptomsSuggester
-                isOpen={showSuggetions} setOpen={setShowSuggestions}
-                symptomsText={symptoms} suggestedText={suggestedText}
-                setSymptoms={setSymptoms}/>
-                <span>{symptomMaxLength - symptoms.length}</span>
-                <textarea rows={5} cols={40} value={symptoms} onChange={e => updateSymptoms(e.target.value)}/>
+                <div>
+                    <div style={{display: 'grid', gridTemplateColumns: '1fr 6fr 1fr', marginBottom: '0.5rem'}}>
+                        <AudioRecorder setLoading={setSuggestionsLoading} symptomsSetter={setSymptoms} suggestionsSetter={setSuggestedText}/>
+                       
+                        <button
+                        style={{visibility: symptoms.length > 10 && symptoms != suggestedText ? 'visible' : 'hidden'}}
+                        onClick={_ => getAndShowSuggestions()}
+                        className="review-button show-suggestions-button">Show suggestions</button>
+
+                        {suggestionsLoading && <CircularProgress/>}
+                    </div>
+                    <div>
+                        <SymptomsSuggester
+                        isOpen={showSuggetions} setOpen={setShowSuggestions}
+                        symptomsText={symptoms} suggestedText={suggestedText}
+                        setSymptoms={setSymptoms}/>
+                        <span style={{padding: '0.5rem 0'}}>{symptomMaxLength - symptoms.length}</span>
+                        <textarea rows={5} cols={40} value={symptoms} onChange={e => updateSymptoms(e.target.value)}/>
+                    </div>
+                </div>
             </div>
-            <AudioRecorder/>
             <button onClick={_ => submitAppointment()} className="appointments-button-active submit">Schedule</button>
         </div>
     )

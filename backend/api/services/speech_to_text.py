@@ -19,5 +19,4 @@ def transcribe(file_storage_obj):
         audio_data=audio,
         credentials_json=service_account_json
     )
-    print(text)
     return text

@@ -141,14 +141,10 @@ def generate_suggestions_route(user_context):
 
     except Exception as e:
         return {'error': str(e)}, 500
-"""
-upload = request.files['audio']
-    filename = secure_filename(upload.filename)
-    save_path = os.path.join('uploads', filename)
-    upload.save(save_path)
-    return {}, 200
-"""
+
 @appointment_blueprint.route('/suggestions-audio', methods=['POST'])
 @protected_route(['patient'])
 def generate_suggestions_from_audio(user_context):
-    return {'text': transcribe(request.files['audio'])}, 200
+    speech_transcription = transcribe(request.files['audio'])
+    suggestions = get_symptoms_suggestions(speech_transcription)
+    return {'text': suggestions}, 200

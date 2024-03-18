@@ -19,4 +19,4 @@ def get_symptoms_suggestions(symptoms_text: str) -> list[str]:
     prompt = PROMPT_BASE + symptoms_text
     response = model.generate_content(prompt, generation_config=gen_config)
 
-    return response.text.replace('\n', ' ').replace('- ', '')
+    return response.text.replace('\n', ' ').replace('- ', '').replace('*', '')
